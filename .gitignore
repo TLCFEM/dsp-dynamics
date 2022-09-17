@@ -29,3 +29,4 @@ venv
 .idea
 PIC/*-eps-converted-to.pdf
 PIC/*.csv
+__pycache__

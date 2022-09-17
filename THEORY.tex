@@ -65,7 +65,7 @@ with the fundamental solution
 \begin{gather}
 h\left(t\right)=\dfrac{1}{m\omega_d}\exp\left(-\zeta\omega_nt\right)\sin\left(\omega_dt\right)
 \end{gather}
-where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\omega=\sqrt{\dfrac{k}{m}}$ is the natural frequency of the system, $\zeta=\dfrac{c}{2\sqrt{mk}}$ is the damping ratio, $\omega_d=\omega_n\sqrt{1-\zeta^2}$ is the dampened frequency. \eqsref{eq:duhamel} is essentially the convolution of two functions $p\left(t\right)$ and $h\left(t\right)$ such that
+where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\omega_n=\sqrt{\dfrac{k}{m}}$ is the natural frequency of the system, $\zeta=\dfrac{c}{2\sqrt{mk}}$ is the damping ratio, $\omega_d=\omega_n\sqrt{1-\zeta^2}$ is the dampened frequency. \eqsref{eq:duhamel} is essentially the convolution of two functions $p\left(t\right)$ and $h\left(t\right)$ such that
 \begin{gather}
 u\left(t\right)=\left(p\ast{}h\right)\left(t\right)=\left(h\ast{}p\right)\left(t\right),
 \end{gather}
@@ -89,9 +89,9 @@ Consider the sinusoid
 \begin{gather}
 u(t)=\sin\left(2\pi{}f_0t\right),
 \end{gather}
-with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at rate $f_s=\SI{200}{\hertz}$, the discrete--time signal $u[n]$ can be depicted in \figref{fig:original}. The corresponding Nyquist frequency is $f_s/2=\SI{100}{\hertz}$, thus, the frequency ranges from \SI{-100}{\hertz} to \SI{100}{\hertz}.
+with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at rate $f_s=\SI{200}{\hertz}$, the discrete--time signal $u[n]$ can be depicted in \figref{fig:original}. The corresponding Nyquist frequency is $f_s/2=\SI{100}{\hertz}$, thus, the frequency ranges from \SI{-100}{\hertz} to \SI{100}{\hertz} (negative frequency not shown).
 
-By choosing an upsampling factor $L=10$, the extended signal $u_e[n]$ (zero--stuffed) can be illustrated as in \figref{fig:extended}. The Nyquist frequency of $u_e[n]$ is $10\times\SI{100}{\hertz}=\SI{1000}{\hertz}$, the original component at $\SI{25}{\hertz}$ is copied in the additional frequency domain ranging from \SI{100}{\hertz} to \SI{1000}{\hertz} (negative frequency as well).
+By choosing an upsampling factor $L=10$, the extended signal $u_e[n]$ (zero--stuffed) can be illustrated as in \figref{fig:extended}. The Nyquist frequency of $u_e[n]$ is $10\times\SI{100}{\hertz}=\SI{1000}{\hertz}$, the original component at $\SI{25}{\hertz}$ is copied in the additional frequency domain ranging from \SI{100}{\hertz} to \SI{1000}{\hertz}.
 \begin{figure}[ht]
 \centering
 \includegraphics{PIC/PureSineExtended}
@@ -100,7 +100,7 @@ By choosing an upsampling factor $L=10$, the extended signal $u_e[n]$ (zero--stu
 
 The linear interpolation (triangular window) can be constructed as
 \begin{gather}
-h[n]=\begin{bmatrix}
+h[n]=0.1\times\begin{bmatrix}
 1&2&3&\cdots&10&\cdots&3&2&1
 \end{bmatrix},
 \end{gather}
@@ -118,3 +118,15 @@ The upsampled signal can be obtained by either performing the convolution in tim
 \caption{interpolated sine wave and its derivatives in time domain and frequency domain}\label{fig:interpolated}
 \end{figure}
 \figref{fig:interpolated} shows the interpolated signal and its derivatives in both time domain and frequency domain. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe) of the triangular window, although the spectral images in $u_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, the corresponding components in $v_i[n]$ and $a_i[n]$ may have significant magnitudes compared to that of the main lobe.
+
+\begin{figure}[ht]
+\centering
+\includegraphics{PIC/ConstantProportional5000}
+\caption{fundamental solution with constant damping}\label{fig:constant_damping}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\includegraphics{PIC/StiffnessProportional100}
+\caption{fundamental solution with stiffness proportional damping}\label{fig:k_proportional}
+\end{figure}
