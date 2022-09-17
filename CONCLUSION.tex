@@ -1,0 +1,9 @@
+\section{Conclusions}
+It is evident that the linear interpolation is not ideal.
+\begin{enumerate}
+\item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, one shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval. Then, the seismogram shall be upsampled.
+\item The low--pass filter shall possess sufficiently small side lobe level.
+\item The time integration method shall possess algorithmic damping. The Newmark method with average constant acceleration is not a proper option in this regard. Alternatives such as the Bathe two--step method and the GSSSS framework are able to provide controllable algorithmic damping at high frequencies which can further attenuate the unexpected response stems from source signal.
+\item The Rayleigh damping model undoubtedly introduces high damping forces in high frequencies. However, with sufficiently small, if not in absence of, high frequency components, the Rayleigh damping model can still be used. The spurious damping force can be suppressed.
+\item It is still preferred to use an alternative damping model that does not produce unbounded damping action in regions out of interests.
+\end{enumerate}
