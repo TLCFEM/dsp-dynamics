@@ -4,7 +4,7 @@ import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 
-from DFT import PureSine
+import PureSine
 
 matplotlib.rcParams.update({'font.size': 6})
 
