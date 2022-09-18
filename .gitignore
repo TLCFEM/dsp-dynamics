@@ -27,6 +27,5 @@
 DYNDSP.pdf
 venv
 .idea
-PIC/*-eps-converted-to.pdf
-PIC/*.csv
+PIC/*
 __pycache__
