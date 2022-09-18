@@ -42,7 +42,6 @@ def get_amplitude(damping_type, omega_n, a, time):
 
 
 max_frequency = PureSine.sampling_f * PureSine.ratio
-duration = 20
 
 
 def get_line_style():
@@ -95,6 +94,14 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
     def compute_response(freq):
         omega_n = 2 * np.pi * freq
         sampling_f = max_frequency  # Hz
+
+        duration = -np.log2(1e-8) / a
+
+        if damping_type == 'Constant':
+            duration /= omega_n
+        elif damping_type == 'Stiffness':
+            duration /= omega_n * omega_n
+
         samples = int(duration * sampling_f)
 
         time = np.linspace(0, duration, samples, endpoint=False)
