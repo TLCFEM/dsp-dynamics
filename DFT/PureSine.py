@@ -83,13 +83,13 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     ax1 = fig.add_subplot(211)
-    add_stem(rf'Original Sine Wave $f={natural_f}$ Hz with $f_s={sampling_f}$ Hz', time, amplitude, 'Time (s)',
+    add_stem(rf'original sine wave $u[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', time, amplitude, 'Time (s)',
              'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
     ax3 = fig.add_subplot(212)
-    add_stem('Original Spectrum', freq, np.abs(original), 'Frequency (Hz)', 'Amplitude')
+    add_stem('original spectrum', freq, np.abs(original), 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
 
     fig.tight_layout()
@@ -97,12 +97,12 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     ax2 = fig.add_subplot(211)
-    add_stem(rf'Extended Sine Wave $L={ratio}$', up_time, up_amplitude, 'Time (s)', 'Amplitude')
+    add_stem(rf'extended sine wave $u_e[n]$ with $L={ratio}$', up_time, up_amplitude, 'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
     ax4 = fig.add_subplot(212)
-    add_stem(rf'Extended Spectrum $L={ratio}$', up_freq, np.abs(up_original), 'Frequency (Hz)', 'Amplitude')
+    add_stem(rf'extended spectrum $L={ratio}$', up_freq, np.abs(up_original), 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
 
     fig.tight_layout()
@@ -110,7 +110,7 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 1.5), dpi=200)
 
     ax1 = fig.add_subplot(111)
-    add_plot(rf'Triangular Window', window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)), 'Frequency (Hz)',
+    add_plot(rf'triangular window', window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)), 'Frequency (Hz)',
              'Amplitude (dB)')
     plt.xlim([-xlim_freq[1], xlim_freq[1]])
     plt.ylim([-60, 10])
@@ -121,12 +121,12 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 6), dpi=200)
 
     ax1 = fig.add_subplot(411)
-    add_stem(rf'Convolution/Interpolation', up_time, conv, 'Time (s)', 'Amplitude', True)
+    add_stem(rf'convolution/interpolation $u_i[n]$', up_time, conv, 'Time (s)', 'Amplitude', True)
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
     ax2 = fig.add_subplot(412)
-    add_stem(rf'Convolution/Interpolation Spectrum $L={ratio}$', up_freq, conv_fft, 'Frequency (Hz)', 'Amplitude')
+    add_stem(rf'convolution/interpolation spectrum $L={ratio}$', up_freq, conv_fft, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_fft))
@@ -134,14 +134,14 @@ def perform_computation():
     np.savetxt('../PIC/Convolution.csv', np.vstack((up_freq, conv_fft)).T, delimiter=',', header='Frequency,Amplitude')
 
     ax3 = fig.add_subplot(413)
-    add_stem(rf'First Time Derivative of Convolution/Interpolation Spectrum $L={ratio}$', up_freq,
+    add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq,
              conv_v, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_v))
 
     ax3 = fig.add_subplot(414)
-    add_stem(rf'Second Time Derivative of Convolution/Interpolation Spectrum $L={ratio}$', up_freq,
+    add_stem(rf'$\omega^2{{}}u_i[n]$ spectrum $L={ratio}$', up_freq,
              conv_a, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
     plt.yscale('log')
