@@ -1,20 +1,20 @@
 import numpy as np
 from matplotlib import pyplot as plt
 
-from DFT.FundamentalSolution import mass_proportional
+from FundamentalSolution import mass_proportional
 
-x_max = 10
-duration = 10
+x_max = 100
+duration = 20
 
 
 def compute_response(freq):
     omega_n = 2 * np.pi * freq
     sampling_f = x_max * freq
     samples = int(duration * sampling_f)
-    a = .05
+    a = .01
 
     time = np.linspace(0, duration, samples, endpoint=False)
-    amplitude = mass_proportional(omega_n, a * omega_n)(time)
+    amplitude = mass_proportional(omega_n, a * omega_n)(time) * time[1]
 
     plt.plot(time, amplitude)
 
@@ -22,10 +22,12 @@ def compute_response(freq):
     load = np.sin(.1 * omega_n * time)
 
     plt.plot(time, load)
-
+    #
     plt.plot(time, np.convolve(amplitude, load, 'same'))
 
 
 if __name__ == '__main__':
-    compute_response(1)
+    fig = plt.figure(figsize=(7, 4), dpi=200)
+    compute_response(2)
+    fig.tight_layout()
     plt.show()

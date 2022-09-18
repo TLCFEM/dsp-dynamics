@@ -8,6 +8,8 @@ import PureSine
 
 matplotlib.rcParams.update({'font.size': 6})
 
+__NORMALISED__: bool = True
+
 
 def get_kernel(omega_n, zeta):
     omega_d = omega_n * np.sqrt(1 - zeta ** 2)
@@ -28,18 +30,18 @@ def mass_proportional(omega_n, a):
 
 def get_amplitude(damping_type, omega_n, a, time):
     if damping_type == 'Stiffness':
-        amplitude = stiffness_proportional(omega_n, a)(time)
+        history = stiffness_proportional(omega_n, a)(time)
     elif damping_type == 'Mass':
-        amplitude = mass_proportional(omega_n, a)(time)
+        history = mass_proportional(omega_n, a)(time)
     else:
-        amplitude = mass_proportional(omega_n, a * omega_n)(time)
+        history = mass_proportional(omega_n, a * omega_n)(time)
 
-    amplitude = np.abs(np.fft.rfft(amplitude))
+    amplitude = 2 * np.abs(np.fft.rfft(history)) / len(time)
 
     return amplitude
 
 
-multiplier = 3
+max_frequency = PureSine.sampling_f * PureSine.ratio
 duration = 20
 
 
@@ -67,67 +69,98 @@ def get_line_style():
         yield v[1]
 
 
+def compute_magnitude(freq_n, zeta, freq):
+    omega = 2 * np.pi * freq
+    omega_n = 2 * np.pi * freq_n
+    return 1 / np.sqrt((omega_n ** 2 - omega ** 2) ** 2 + (2 * zeta * omega * omega_n) ** 2)
+
+
 LS = get_line_style()
 
 
 def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
     if damping_type == 'Constant':
         fig = plt.figure(figsize=(6, 2), dpi=200)
-        plt.title(rf'Constant Damping Ratio ($\zeta={a}$)')
     else:
         fig = plt.figure(figsize=(6, 3), dpi=200)
-        plt.title(rf'{damping_type} Proportional ($a={a}$, $m=1$)')
-    plt.xlabel('Normalised Frequency')
-    plt.ylabel('Amplitude')
-    # plt.yscale('log')
-    plt.grid(True, which='major', linewidth=.2, linestyle='-')
+    plt.xlabel('Frequency (Hz)')
+    if __NORMALISED__:
+        plt.ylabel(r'Normalised Magnitude $u/u_{st}$')
+    else:
+        plt.ylabel(r'Magnitude $u$')
+    plt.yscale('log')
+    plt.grid(True, which='both', linewidth=.2, linestyle='-')
+    plt.gca().xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(2))
 
     def compute_response(freq):
         omega_n = 2 * np.pi * freq
-        sampling_f = max(2 * multiplier * freq, PureSine.sampling_f * PureSine.ratio)
+        sampling_f = max_frequency  # Hz
         samples = int(duration * sampling_f)
 
         time = np.linspace(0, duration, samples, endpoint=False)
         amplitude = get_amplitude(damping_type, omega_n, a, time)
 
-        freq_range = np.fft.rfftfreq(samples, 1 / sampling_f)
-        x_range = freq_range / freq
+        freq_range = np.fft.rfftfreq(samples, 1 / sampling_f)  # Hz
+
+        if __NORMALISED__:
+            amplitude /= amplitude[0]
 
         plt.plot(
-            x_range,
-            amplitude * omega_n * 2 * a * freq,
+            freq_range,
+            amplitude,
             linestyle=next(LS),
             linewidth=1.4,
         )
-        plt.xlim([0, multiplier])
+
+        # if damping_type == 'Constant':
+        #     plt.plot(
+        #         freq_range,
+        #         compute_magnitude(freq, a, freq_range) * omega_n * omega_n,
+        #         linestyle=next(LS),
+        #         linewidth=1,
+        #     )
 
     if damping_type == 'Stiffness':
         all_freq = np.arange(0, min(1000, 1 / a / 2 / np.pi), 100)
     elif damping_type == 'Mass':
-        all_freq = np.linspace(0, 50, 10, endpoint=False)
+        all_freq = np.arange(0, 1000, 100)
     else:
-        all_freq = np.linspace(0, 200, 3, endpoint=False)
+        all_freq = [0, 200, 0]
 
-    for f in all_freq[1:-1]:
+    all_freq = all_freq[1:-1]
+    for f in all_freq:
         compute_response(f)
 
-    if damping_type == 'Stiffness':
-        plt.legend(
-            [rf'$f_n={v:.1f}$ Hz, $\omega_n={v * 2 * np.pi:.1f}$ Hz, $\zeta={a * v * 2 * np.pi:.3f}$' for v in
-             all_freq[1:-1]], handlelength=3, ncol=1, loc='upper right')
-        plt.ylabel('Velocity Amplitude')
-    elif damping_type == 'Mass':
-        plt.legend([rf'$\omega_n={v:.1f}$ Hz, $\zeta={a / v:.1e}$' for v in all_freq[1:-1]], handlelength=3, ncol=2,
-                   loc='upper right')
+    if __NORMALISED__:
+        legend_location = 'lower left'
+        n_col = 2
     else:
-        plt.legend([rf'$\omega_n$'], handlelength=3, ncol=2, loc='upper right')
-        plt.xlabel('Natural Frequency')
+        legend_location = 'lower left'
+        n_col = 2
 
+    if damping_type == 'Stiffness':
+        plt.title(rf'frequency response of {damping_type.lower()} proportional damping ($a_1={a}$, $m=1$)')
+        plt.legend(
+            [rf'$f_n={v:3.1f}$ Hz, $\omega_n={v * 2 * np.pi:06.1f}$ rad/s, $\zeta={a * v * 2 * np.pi:.3f}$' for v in
+             all_freq], handlelength=3, ncol=n_col, loc=legend_location)
+    elif damping_type == 'Mass':
+        plt.title(rf'frequency response of {damping_type.lower()} proportional damping ($a_0={a}$, $m=1$)')
+        plt.legend(
+            [rf'$f_n={v:3.1f}$ Hz, $\zeta={a / (v * 2 * np.pi):2.1e}$' for v in
+             all_freq], handlelength=3, ncol=2, loc='lower left')
+    else:
+        plt.title(rf'frequency response of constant damping ($\zeta={a}$)')
+        plt.legend([rf'$f_n={all_freq[0]}$ Hz'], handlelength=3, loc='upper right')
+
+    plt.xlim([0, max_frequency / 2])
     fig.tight_layout()
-    fig.show()
+    # fig.show()
     fig.savefig(f'../PIC/{damping_type}Proportional{int(1e5 * a)}.eps', format='eps')
 
 
 if __name__ == '__main__':
-    perform_analysis('Constant', .02)
-    perform_analysis('Stiffness', .0001)
+    max_frequency = 1000
+    perform_analysis('Constant', .01)
+    max_frequency = 2000
+    perform_analysis('Stiffness', .00001)
+    perform_analysis('Mass', 2)

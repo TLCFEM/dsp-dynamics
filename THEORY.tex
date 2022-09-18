@@ -1,19 +1,19 @@
 \section{Background}
 \subsection{Frequency Components}
-Consider a simple sinusoid with the frequency $\omega_0$ representing, for example, displacement $u$ as a function of time $t$,
+Consider a simple sinusoid with the angular frequency $\omega_0=2\pi{}f_0$ representing, for example, displacement $u$ as a function of time $t$,
 \begin{gather}
 u\left(t\right)=\sin\left(\omega_0t\right),
 \end{gather}
 with little effort, its time derivatives can be derived as
 \begin{gather}
-v\left(t\right)=\ddfrac{u\left(t\right)}{t}=\omega_0\cos\left(\omega_0t\right),\qquad
-a\left(t\right)=\ddfrac{v\left(t\right)}{t}=-\omega_0^2\sin\left(\omega_0t\right).
+v\left(t\right)=\ddfrac{u\left(t\right)}{t}=\dot{u}\left(t\right)=\omega_0\cos\left(\omega_0t\right),\qquad
+a\left(t\right)=\ddfrac{v\left(t\right)}{t}=\dot{v}\left(t\right)=-\omega_0^2\sin\left(\omega_0t\right).
 \end{gather}
 It is evident that the magnitudes of velocity $v$ and acceleration $a$ are scaled by $\omega_0$ and $\omega_0^2$, respectively. Now consider an arbitrary integrable function of time representing, again, displacement $u$. Its Fourier transform can be expressed as
 \begin{gather}
-\hat{u}\left(\omega\right)=\int_{-\infty}^{\infty}u\left(t\right)\exp\left(-i\omega{}t\right)\md{t}.
+\hat{u}\left(\omega\right)=\mathscr{F}\left\{u\left(t\right)\right\}=\int_{-\infty}^{\infty}u\left(t\right)\exp\left(-i\omega{}t\right)\md{t}.
 \end{gather}
-Accordingly, for $v$ and $a$, one can obtain
+One way or another, the conversion between angular frequency $\omega$ and frequency $f$ would be done implicitly in this work. Accordingly, for $v$ and $a$, one can obtain
 \begin{gather}\label{eq:scaling}
 \begin{split}
 \hat{v}\left(\omega\right)=i\omega\hat{u}\left(\omega\right),\qquad
@@ -29,7 +29,7 @@ The typical sampling rate of ground motion seismograms ranges from \SI{50}{\hert
 
 It is then a convention to perform linear interpolation between two adjacent discrete samples for the case that time step size (of numerical analysis) is different from sampling interval (of input seismogram). Essentially, the linear interpolation is equivalent to a low--pass finite impulse response (FIR) filter with a triangular window.
 
-For the ease of discussion, let sampling interval be the multiple of time step size and let the ratio be $L$, which is an integer. It is then equivalent to upsample the input seismogram by the same ratio $L$. If the sampling rate/frequency of the original seismogram is $\omega_s$, then the upsampled signal has a sampling rate of $L\omega_s$. Extra attention shall be paid to the original Nyquist frequency $\omega_s/2$ since anything above it cannot be reconstructed. For a discrete--time signal $u[n]$, a typical upsampling operation with upsampling factor $L$ consists of two steps:
+For the ease of discussion, let sampling interval be the multiple of time step size and let the ratio be $L$, which is an integer. It is then equivalent to upsample the input seismogram by the same ratio $L$. If the sampling rate/frequency of the original seismogram is $f_s$, then the upsampled signal has a sampling rate of $Lf_s$. Extra attention shall be paid to the original Nyquist frequency $f_s/2$ since anything above it cannot be reconstructed. For a discrete--time signal $u[n]$, a typical upsampling operation with upsampling factor $L$ consists of two steps:
 \begin{enumerate}
 \item Insert $L-1$ zeros between each pair of adjacent samples in $u[n]$, resulting in a new signal $u_e[n]$ which can be formally defined as
 \begin{gather}
@@ -40,7 +40,7 @@ u[n/L],&n=0,L,2L,3L,\cdots,\\
 \end{array}
 \right.
 \end{gather}
-This is called an expander, and is often denoted by $\uparrow{}L$ such that $u_e[n]=[\uparrow{}L]u[n]$.
+This is known as an expander, and is often denoted by $\uparrow{}L$ such that $u_e[n]=[\uparrow{}L]u[n]$.
 \item Apply a low--pass filter with kernel $h[n]$ on $u_e[n]$ via convolution. The linear interpolation corresponds to the following kernel.
 \begin{gather}
 h[n]=\left\{
@@ -50,9 +50,9 @@ h[n]=\left\{
 \end{array}
 \right.
 \end{gather}
-The interpolated/filtered signal is denoted as $u_i[n]$. In this work, different kernels will be discussed.
+The convoluted/interpolated/filtered signal is denoted as $u_i[n]$. In this work, different kernels will be discussed.
 \end{enumerate}
-\subsection{Oscillator}
+\subsection{Oscillator System}
 Consider a simple mass--spring--dashpot linear oscillator system subject to external load $p\left(t\right)$ with the following equation of motion
 \begin{gather}
 ma\left(t\right)+cv\left(t\right)+ku\left(t\right)=p\left(t\right),
@@ -63,7 +63,7 @@ u\left(t\right)=\int_{0}^{t}p\left(\tau\right)h\left(t-\tau\right)\md{\tau},
 \end{gather}
 with the fundamental solution
 \begin{gather}
-h\left(t\right)=\dfrac{1}{m\omega_d}\exp\left(-\zeta\omega_nt\right)\sin\left(\omega_dt\right)
+h\left(t\right)=\dfrac{1}{m\omega_d}\exp\left(-\zeta\omega_nt\right)\sin\left(\omega_dt\right),
 \end{gather}
 where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\omega_n=\sqrt{\dfrac{k}{m}}$ is the natural frequency of the system, $\zeta=\dfrac{c}{2\sqrt{mk}}$ is the damping ratio, $\omega_d=\omega_n\sqrt{1-\zeta^2}$ is the dampened frequency. \eqsref{eq:duhamel} is essentially the convolution of two functions $p\left(t\right)$ and $h\left(t\right)$ such that
 \begin{gather}
@@ -75,28 +75,29 @@ If the external load $p\left(t\right)$ is treated as a signal and the fundamenta
 \begin{gather}
 u[t]=\left(p\ast{}h\right)[t].
 \end{gather}
-with the sampled $p[t]$ and $h[t]$. The discrete--time kernel $h[t]$, which represents a dampened low--pass filter, can be obtained by truncating $h\left(t\right)$ following a similar procedure used in the window design method. The maximum gain is achieved at $\omega=\omega_d$ and high frequency components of $p[t]$ are attenuated by $h[t]$.
-\section{A Close Look}
-Since the extended discrete signal $u_e[n]$ is $u[n]$ with additional zero samples, once the upsampling factor $L$ is chosen, $u_[n]$ can be converted to $u_e[n]$ and vice versa. We focus on the properties of $u_e[n]$.
+with the sampled $p[t]$ and $h[t]$. The discrete--time kernel $h[t]$, which represents a dampened low--pass filter, can be obtained by truncating and sampling $h\left(t\right)$ following a similar procedure used in the window design method. The maximum gain is achieved at $\omega=\omega_d$ and high frequency components of $p[t]$ are attenuated by $h[t]$.
+\section{A Close Look Reveals Potential Issue}
+Since the extended discrete signal $u_e[n]$ is $u[n]$ with additional zero samples, once the upsampling factor $L$ is chosen, $u[n]$ can be converted to $u_e[n]$ and vice versa. We focus on the properties of $u_e[n]$.
 
-The bare $u_e[n]$ without any filters contains spectral images, that is, extra copies of the original spectrum $\omega\in[0,~\omega_s/2]$ in additional frequency domain $\omega\in[\omega_s/2,~L\omega_s/2]$.
-\begin{figure}[ht]
+The bare $u_e[n]$ without applying any filters contains spectral images, that is, extra copies of the original spectrum $\omega\in[0,~\omega_s/2]$ in additional frequency domain $\omega\in[\omega_s/2,~L\omega_s/2]$. For example, consider the sinusoid
+\begin{gather}
+u(t)=\sin\left(2\pi{}f_0t\right),
+\end{gather}
+with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at rate $f_s=\SI{200}{\hertz}$, the discrete--time signal $u[n]$ can be depicted in \figref{fig:original}.
+\begin{figure}[H]
 \centering
 \includegraphics{PIC/PureSineOrigin}
 \caption{original sine wave in time domain and frequency domain}\label{fig:original}
 \end{figure}
-Consider the sinusoid
-\begin{gather}
-u(t)=\sin\left(2\pi{}f_0t\right),
-\end{gather}
-with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at rate $f_s=\SI{200}{\hertz}$, the discrete--time signal $u[n]$ can be depicted in \figref{fig:original}. The corresponding Nyquist frequency is $f_s/2=\SI{100}{\hertz}$, thus, the frequency ranges from \SI{-100}{\hertz} to \SI{100}{\hertz} (negative frequency not shown).
+The corresponding Nyquist frequency is $f_s/2=\SI{100}{\hertz}$, thus, the frequency ranges from \SI{-100}{\hertz} to \SI{100}{\hertz} (negative frequency not shown).
 
-By choosing an upsampling factor $L=10$, the extended signal $u_e[n]$ (zero--stuffed) can be illustrated as in \figref{fig:extended}. The Nyquist frequency of $u_e[n]$ is $10\times\SI{100}{\hertz}=\SI{1000}{\hertz}$, the original component at $\SI{25}{\hertz}$ is copied in the additional frequency domain ranging from \SI{100}{\hertz} to \SI{1000}{\hertz}.
-\begin{figure}[ht]
+By choosing an upsampling factor $L=10$, the extended signal $u_e[n]$ (zero--stuffed) can be illustrated as in \figref{fig:extended}.
+\begin{figure}[H]
 \centering
 \includegraphics{PIC/PureSineExtended}
 \caption{zero--stuffed sine wave in time domain and frequency domain}\label{fig:extended}
 \end{figure}
+The Nyquist frequency of $u_e[n]$ is $10\times\SI{100}{\hertz}=\SI{1000}{\hertz}$, the original component at $\SI{25}{\hertz}$ is copied in the additional frequency domain ranging from \SI{100}{\hertz} to \SI{1000}{\hertz}.
 
 The linear interpolation (triangular window) can be constructed as
 \begin{gather}
@@ -105,30 +106,48 @@ h[n]=0.1\times\begin{bmatrix}
 \end{bmatrix},
 \end{gather}
 its frequency response can be seen in \figref{fig:tri_window}.
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
 \includegraphics{PIC/TriangularWindow}
 \caption{triangular window in frequency domain}\label{fig:tri_window}
 \end{figure}
 
 By the convolution theorem, the upsampled signal can be obtained by either performing the convolution in time domain or multiplication in frequency domain.
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
 \includegraphics{PIC/Convolution}
 \caption{interpolated sine wave and its derivatives in time domain and frequency domain}\label{fig:interpolated}
 \end{figure}
-\figref{fig:interpolated} shows the interpolated signal and its derivatives in both time domain and frequency domain. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe) of the triangular window, although the spectral images in $u_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, the corresponding components in $v_i[n]$ and $a_i[n]$ may have significant magnitudes compared to that of the main lobe.
+\figref{fig:interpolated} shows the interpolated signal and its derivatives, which are equivalent to $\omega^nu_i[n]$ as proved in \eqsref{eq:scaling}, in both time domain and frequency domain. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe) of the triangular window, although the spectral images in $u_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, the corresponding components in $\omega{}u_i[n]$ and $\omega^2u_i[n]$ may have significant magnitudes compared to that of the main lobe.
 
-\begin{figure}[ht]
+To investigate how the partially attenuated images would affect the response of an oscillator system, consider a single degree of freedom system under harmonic load. The equation of motion can be written as
+\begin{gather}
+ma\left(t\right)+cv\left(t\right)+ku\left(t\right)=\sin\left(\omega{}t\right)=\sin\left(2\pi{}ft\right).
+\end{gather}
+For brevity, here it is assume the harmonic load has a magnitude of unity. The particular solution can be found in the form of
+\begin{gather}
+u\left(t\right)=A\sin\left(\omega{}t-\phi\right),
+\end{gather}
+where $A$, as a function of system parameters, is the amplitude and $\phi$ denotes the phase lag. Given that $m=1$, $k=\omega_n^2$, and noting the harmonic load has a unit magnitude, then, $A$ can be expressed as
+\begin{gather}
+A=\dfrac{1}{\sqrt{\left(w_n^2-w^2\right)^2+4\zeta^2\omega^2\omega_n^2}}.
+\end{gather}
+
+
+\begin{figure}[H]
 \centering
-\includegraphics[width=.99\linewidth]{PIC/ConstantProportional2000}
+\includegraphics[width=.99\linewidth]{PIC/ConstantProportional1000}
 \caption{fundamental solution with constant damping}\label{fig:constant_damping}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphics{PIC/StiffnessProportional100}
+\includegraphics{PIC/StiffnessProportional1}
 \caption{fundamental solution with stiffness proportional damping}\label{fig:k_proportional}
 \end{figure}
 
-To investigate how the partially attenuated images would affect the response of an oscillator system, consider a single degree of freedom system under harmonic load.
+\begin{figure}[H]
+\centering
+\includegraphics{PIC/MassProportional200000}
+\caption{fundamental solution with mass proportional damping}\label{fig:m_proportional}
+\end{figure}
