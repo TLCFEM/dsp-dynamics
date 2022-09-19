@@ -131,13 +131,6 @@ def perform_computation():
     plt.yscale('log')
     plt.ylim(compute_range(conv_fft))
 
-    np.savetxt('../PIC/Convolution.csv', conv_fft[conv_fft > 1e-3], delimiter=',', header='Amplitude')
-
-    window_amp = np.fft.rfft(tri_window, len(up_sine_wave))
-    window_amp /= np.max(window_amp)
-    product = np.abs(up_amplitude * window_amp)
-    np.savetxt('../PIC/TriMultiply.csv', product[product > 1e-3], delimiter=',', header='Amplitude')
-
     fig.add_subplot(413)
     add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_v, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
@@ -152,6 +145,15 @@ def perform_computation():
 
     fig.tight_layout()
     fig.savefig('../PIC/Convolution.eps', format='eps')
+
+    np.savetxt('../PIC/Convolution.csv', conv_fft[conv_fft > 1e-3], delimiter=',', header='Amplitude')
+    np.savetxt('../PIC/ConvolutionW.csv', conv_v[conv_v > 1e-3], delimiter=',', header='Amplitude')
+    np.savetxt('../PIC/ConvolutionWW.csv', conv_a[conv_a > 1e-3], delimiter=',', header='Amplitude')
+
+    window_amp = np.fft.rfft(tri_window, len(up_sine_wave))
+    window_amp /= np.max(window_amp)
+    product = np.abs(up_amplitude * window_amp)
+    np.savetxt('../PIC/TriMultiply.csv', product[product > 1e-3], delimiter=',', header='Amplitude')
 
 
 if __name__ == '__main__':
