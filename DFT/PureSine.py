@@ -49,67 +49,67 @@ def compute_range(array):
 
 def perform_computation():
     samples = int(duration * sampling_f)
+    up_sampling_f = sampling_f * ratio
 
-    time = np.linspace(0, duration, samples, endpoint=False)
-    amplitude = np.sin(2 * np.pi * natural_f * time)
+    o_time = np.linspace(0, duration, samples, endpoint=False)
+    o_sine_wave = np.sin(2 * np.pi * natural_f * o_time)
 
     up_time = np.linspace(0, duration, ratio * samples, endpoint=False)
-    up_amplitude = np.zeros(ratio * samples)
-    up_amplitude[::ratio] = amplitude
+    up_sine_wave = np.zeros(ratio * samples)
+    up_sine_wave[::ratio] = o_sine_wave
 
-    original = 2 * np.fft.rfft(amplitude) / samples
-    freq = np.fft.rfftfreq(samples, 1 / sampling_f)
+    o_amplitude = 2 * np.fft.rfft(o_sine_wave) / len(o_sine_wave)
+    o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, 1 / sampling_f)
 
-    up_original = 2 * np.fft.rfft(up_amplitude) / samples
-    up_freq = np.fft.rfftfreq(ratio * samples, 1 / sampling_f / ratio)
+    up_amplitude = 2 * np.fft.rfft(up_sine_wave) / len(up_sine_wave) * ratio
+    up_freq = np.fft.rfftfreq(2 * len(up_amplitude) - 2, 1 / up_sampling_f)
 
     tri_window = signal.windows.triang(2 * ratio - 1)
-    print(tri_window)
-    window_amp = np.abs(np.fft.fftshift(np.fft.fft(tri_window, 1024) / len(tri_window)))
+    window_amp = np.abs(np.fft.fftshift(np.fft.fft(tri_window, 512)))
     window_amp /= np.max(window_amp)
-    window_freq = np.linspace(-ratio * sampling_f / 2, ratio * sampling_f / 2, len(window_amp))
+    window_freq = np.fft.fftshift(np.fft.fftfreq(len(window_amp), 1 / up_sampling_f))
 
-    conv = np.convolve(up_amplitude, tri_window, mode='same')
-    conv_fft = np.abs(2 * np.fft.rfft(conv) / samples / ratio)
+    conv = np.convolve(up_sine_wave, tri_window, mode='same')
+    conv_fft = np.abs(2 * np.fft.rfft(conv) / len(conv))
     conv_v = np.multiply(np.abs(up_freq), conv_fft)
     conv_a = np.multiply(np.abs(up_freq), conv_v)
 
     margin = duration / 30
     xlim_time = [-margin, duration + margin]
-    margin *= ratio * sampling_f / duration / 2
-    xlim_freq = [-margin, ratio * sampling_f / 2 + margin]
+    margin *= up_sampling_f / duration / 2
+    xlim_freq = [-margin, up_sampling_f / 2 + margin]
     ylim_time = [-1.1, 1.1]
 
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
-    ax1 = fig.add_subplot(211)
-    add_stem(rf'original sine wave $u[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', time, amplitude, 'Time (s)',
-             'Amplitude')
+    fig.add_subplot(211)
+    add_stem(rf'original sine wave $u[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', o_time, o_sine_wave,
+             'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
-    ax3 = fig.add_subplot(212)
-    add_stem('original spectrum', freq, np.abs(original), 'Frequency (Hz)', 'Amplitude')
+    fig.add_subplot(212)
+    add_stem('original spectrum', o_freq, np.abs(o_amplitude), 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
 
     fig.tight_layout()
     fig.savefig('../PIC/PureSineOrigin.eps', format='eps')
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
-    ax2 = fig.add_subplot(211)
-    add_stem(rf'extended sine wave $u_e[n]$ with $L={ratio}$', up_time, up_amplitude, 'Time (s)', 'Amplitude')
+    fig.add_subplot(211)
+    add_stem(rf'extended sine wave $u_e[n]$ with $L={ratio}$', up_time, up_sine_wave, 'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
-    ax4 = fig.add_subplot(212)
-    add_stem(rf'extended spectrum $L={ratio}$', up_freq, np.abs(up_original), 'Frequency (Hz)', 'Amplitude')
+    fig.add_subplot(212)
+    add_stem(rf'extended spectrum $L={ratio}$', up_freq, np.abs(up_amplitude), 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
 
     fig.tight_layout()
     fig.savefig('../PIC/PureSineExtended.eps', format='eps')
     fig = plt.figure(figsize=(6, 1.5), dpi=200)
 
-    ax1 = fig.add_subplot(111)
+    fig.add_subplot(111)
     add_plot(rf'triangular window', window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)), 'Frequency (Hz)',
              'Amplitude (dB)')
     plt.xlim([-xlim_freq[1], xlim_freq[1]])
@@ -120,29 +120,32 @@ def perform_computation():
 
     fig = plt.figure(figsize=(6, 6), dpi=200)
 
-    ax1 = fig.add_subplot(411)
+    fig.add_subplot(411)
     add_stem(rf'convolution/interpolation $u_i[n]$', up_time, conv, 'Time (s)', 'Amplitude', True)
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
-    ax2 = fig.add_subplot(412)
+    fig.add_subplot(412)
     add_stem(rf'convolution/interpolation spectrum $L={ratio}$', up_freq, conv_fft, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_fft))
 
-    np.savetxt('../PIC/Convolution.csv', np.vstack((up_freq, conv_fft)).T, delimiter=',', header='Frequency,Amplitude')
+    np.savetxt('../PIC/Convolution.csv', conv_fft[conv_fft > 1e-3], delimiter=',', header='Amplitude')
 
-    ax3 = fig.add_subplot(413)
-    add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq,
-             conv_v, 'Frequency (Hz)', 'Amplitude')
+    window_amp = np.fft.rfft(tri_window, len(up_sine_wave))
+    window_amp /= np.max(window_amp)
+    product = np.abs(up_amplitude * window_amp)
+    np.savetxt('../PIC/TriMultiply.csv', product[product > 1e-3], delimiter=',', header='Amplitude')
+
+    fig.add_subplot(413)
+    add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_v, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_v))
 
-    ax3 = fig.add_subplot(414)
-    add_stem(rf'$\omega^2{{}}u_i[n]$ spectrum $L={ratio}$', up_freq,
-             conv_a, 'Frequency (Hz)', 'Amplitude')
+    fig.add_subplot(414)
+    add_stem(rf'$\omega^2{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_a, 'Frequency (Hz)', 'Amplitude')
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_a))
