@@ -37,6 +37,17 @@ def add_plot(title, x, y, x_label, y_label):
     plt.grid(True)
 
 
+def add_label(x, y):
+    for xx, yy in zip(x, y):
+        if yy < 1e-8:
+            continue
+        if (xx + natural_f) % sampling_f < 1e-2:
+            loc = 10
+        else:
+            loc = 4
+        plt.annotate(f"{yy:.3f}", (xx, yy), textcoords="offset points", xytext=(0, loc), ha='center')
+
+
 def compute_range(array):
     valid_array = array[array > 1E-8]
     y_actual = math.log10(np.max(valid_array))
@@ -83,7 +94,7 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     fig.add_subplot(211)
-    add_stem(rf'original sine wave $u[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', o_time, o_sine_wave,
+    add_stem(rf'original sine wave $p[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', o_time, o_sine_wave,
              'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
@@ -97,7 +108,7 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     fig.add_subplot(211)
-    add_stem(rf'extended sine wave $u_e[n]$ with $L={ratio}$', up_time, up_sine_wave, 'Time (s)', 'Amplitude')
+    add_stem(rf'extended sine wave $p_e[n]$ with $L={ratio}$', up_time, up_sine_wave, 'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
@@ -118,30 +129,33 @@ def perform_computation():
     fig.tight_layout()
     fig.savefig('../PIC/TriangularWindow.eps', format='eps')
 
-    fig = plt.figure(figsize=(6, 6), dpi=200)
+    fig = plt.figure(figsize=(6, 3), dpi=200)
 
-    fig.add_subplot(411)
-    add_stem(rf'convolution/interpolation $u_i[n]$', up_time, conv, 'Time (s)', 'Amplitude', True)
+    fig.add_subplot(211)
+    add_stem(rf'convolution/interpolation $p_i[n]$', up_time, conv, 'Time (s)', 'Amplitude', True)
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
-    fig.add_subplot(412)
+    fig.add_subplot(212)
     add_stem(rf'convolution/interpolation spectrum $L={ratio}$', up_freq, conv_fft, 'Frequency (Hz)', 'Amplitude')
+    add_label(up_freq, conv_fft)
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_fft))
 
-    fig.add_subplot(413)
-    add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_v, 'Frequency (Hz)', 'Amplitude')
-    plt.xlim(xlim_freq)
-    plt.yscale('log')
-    plt.ylim(compute_range(conv_v))
-
-    fig.add_subplot(414)
-    add_stem(rf'$\omega^2{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_a, 'Frequency (Hz)', 'Amplitude')
-    plt.xlim(xlim_freq)
-    plt.yscale('log')
-    plt.ylim(compute_range(conv_a))
+    # fig.add_subplot(413)
+    # add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_v, 'Frequency (Hz)', 'Amplitude')
+    # add_label(up_freq, conv_v)
+    # plt.xlim(xlim_freq)
+    # plt.yscale('log')
+    # plt.ylim(compute_range(conv_v))
+    #
+    # fig.add_subplot(414)
+    # add_stem(rf'$\omega^2{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_a, 'Frequency (Hz)', 'Amplitude')
+    # add_label(up_freq, conv_a)
+    # plt.xlim(xlim_freq)
+    # plt.yscale('log')
+    # plt.ylim(compute_range(conv_a))
 
     fig.tight_layout()
     fig.savefig('../PIC/Convolution.eps', format='eps')
