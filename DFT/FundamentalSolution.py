@@ -1,3 +1,4 @@
+import math
 from itertools import cycle
 
 import matplotlib
@@ -12,9 +13,8 @@ __NORMALISED__: bool = True
 
 
 def get_kernel(omega_n, zeta):
-    omega_d = omega_n * np.sqrt(1 - zeta ** 2)
-
     def kernel(t):
+        omega_d = omega_n * np.sqrt(1. - zeta ** 2)
         return np.exp(-zeta * omega_n * t) * np.sin(omega_d * t) / omega_d
 
     return kernel
@@ -34,9 +34,9 @@ def get_amplitude(damping_type, omega_n, a, time):
     elif damping_type == 'Mass':
         history = mass_proportional(omega_n, a)(time)
     else:
-        history = mass_proportional(omega_n, a * omega_n)(time)
+        history = get_kernel(omega_n, a)(time)
 
-    amplitude = 2 * np.abs(np.fft.rfft(history)) / len(time)
+    amplitude = 2 * np.abs(np.fft.rfft(history, 2 ** (math.ceil(math.log2(len(history))) + 1))) / len(time)
 
     return amplitude
 
@@ -71,7 +71,8 @@ def get_line_style():
 def compute_magnitude(freq_n, zeta, freq):
     omega = 2 * np.pi * freq
     omega_n = 2 * np.pi * freq_n
-    return 1 / np.sqrt((omega_n ** 2 - omega ** 2) ** 2 + (2 * zeta * omega * omega_n) ** 2)
+    ratio = omega / omega_n
+    return 1 / np.sqrt((1 - ratio ** 2) ** 2 + (2 * zeta * ratio) ** 2)
 
 
 LS = get_line_style()
@@ -95,7 +96,7 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
         omega_n = 2 * np.pi * freq
         sampling_f = max_frequency  # Hz
 
-        duration = -np.log2(1e-8) / a
+        duration = -np.log2(1e-6) / a
 
         if damping_type == 'Constant':
             duration /= omega_n
@@ -107,7 +108,7 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
         time = np.linspace(0, duration, samples, endpoint=False)
         amplitude = get_amplitude(damping_type, omega_n, a, time)
 
-        freq_range = np.fft.rfftfreq(samples, 1 / sampling_f)  # Hz
+        freq_range = np.fft.rfftfreq(2 * len(amplitude) - 2, 1 / sampling_f)  # Hz
 
         if __NORMALISED__:
             amplitude /= amplitude[0]
@@ -120,15 +121,15 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
         )
 
         # if damping_type == 'Constant':
-        #     plt.plot(
-        #         freq_range,
-        #         compute_magnitude(freq, a, freq_range) * omega_n * omega_n,
-        #         linestyle=next(LS),
-        #         linewidth=1,
-        #     )
+        plt.plot(
+            freq_range,
+            compute_magnitude(freq, omega_n * a, freq_range),
+            linestyle=next(LS),
+            linewidth=1,
+        )
 
     if damping_type == 'Stiffness':
-        all_freq = np.arange(0, min(1000, 1 / a / 2 / np.pi), 100)
+        all_freq = np.arange(0, min(100, 1 / a / 2 / np.pi), 10)
     elif damping_type == 'Mass':
         all_freq = np.arange(0, 1000, 100)
     else:
