@@ -5,8 +5,8 @@ import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 
-from DFT.FundamentalSolution import compute_response, get_line_style
-from DFT.PureSine import get_window, compute_range, natural_f, sampling_f
+from FundamentalSolution import compute_response, get_line_style
+from PureSine import get_window, compute_range, natural_f, sampling_f
 
 matplotlib.rcParams.update({'font.size': 6})
 
