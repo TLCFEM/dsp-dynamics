@@ -65,6 +65,21 @@ def stiffness_kernel(f, f_n, a):
 LS = get_line_style()
 
 
+def compute_response(damping_type, a, freq_n: float):
+    freq = np.linspace(0, max_frequency // 2, max_frequency // 2 + 1)
+
+    if damping_type == 'Constant':
+        magnitude = constant_kernel(freq, freq_n, a)
+    elif damping_type == 'Mass':
+        magnitude = mass_kernel(freq, freq_n, a)
+    elif damping_type == 'Stiffness':
+        magnitude = stiffness_kernel(freq, freq_n, a)
+    else:
+        raise ValueError('Unknown damping type')
+
+    return freq, magnitude
+
+
 def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
     if damping_type == 'Constant':
         fig = plt.figure(figsize=(6, 3), dpi=200)
@@ -72,35 +87,20 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
         fig = plt.figure(figsize=(6, 3), dpi=200)
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(r'Magnitude $|\hat{k}|$')
-    # plt.yscale('log')
     plt.grid(True, which='both', linewidth=.2, linestyle='-')
     plt.gca().xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(2))
 
-    def compute_response(freq_n: float):
-        freq = np.linspace(0, max_frequency, 2 * max_frequency, endpoint=False)
-
-        if damping_type == 'Constant':
-            magnitude = constant_kernel(freq, freq_n, a)
-        elif damping_type == 'Mass':
-            magnitude = mass_kernel(freq, freq_n, a)
-        elif damping_type == 'Stiffness':
-            magnitude = stiffness_kernel(freq, freq_n, a)
-        else:
-            raise ValueError('Unknown damping type')
-
+    all_freq = np.arange(0, 1000, 100)
+    all_freq = all_freq[1:-1]
+    all_freq = [f + 100 for f in all_freq]
+    for f in all_freq:
+        freq, magnitude = compute_response(damping_type, a, f)
         plt.plot(
             freq,
             np.abs(magnitude),
             linestyle=next(LS),
             linewidth=1.4,
         )
-
-    all_freq = np.arange(0, 1000, 100)
-    all_freq = all_freq[1:-1]
-    # add 100 to each
-    all_freq = [f + 100 for f in all_freq]
-    for f in all_freq:
-        compute_response(f)
 
     legend_location = 'lower right'
     n_col = 2
@@ -119,13 +119,15 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
         plt.title(rf'frequency response of constant damping ($\zeta={a}$)')
         plt.legend([rf'$f_n={v}$ Hz' for v in all_freq], handlelength=3, ncol=n_col, loc=legend_location)
 
-    plt.xlim([0, max_frequency / 2])
+    plt.xlim([0, max_frequency // 2])
     fig.tight_layout()
-    # fig.show()
-    fig.savefig(f'../PIC/{damping_type}Proportional{int(1e5 * a)}.eps', format='eps', bbox_inches="tight")
+    fig.savefig(f'../PIC/{damping_type}Proportional{int(1e5 * a)}.eps', format='eps')
 
 
 if __name__ == '__main__':
+    perform_analysis('Constant', .0002)
+    perform_analysis('Constant', .002)
     perform_analysis('Constant', .02)
+    perform_analysis('Constant', .2)
     perform_analysis('Stiffness', .0001)
     perform_analysis('Mass', 5)

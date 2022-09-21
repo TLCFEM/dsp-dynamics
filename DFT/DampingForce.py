@@ -1,0 +1,122 @@
+from itertools import cycle
+
+import h5py as h5py
+import matplotlib
+import numpy as np
+from matplotlib import pyplot as plt
+
+from DFT.FundamentalSolution import compute_response, get_line_style
+from DFT.PureSine import get_window, compute_range, natural_f, sampling_f
+
+matplotlib.rcParams.update({'font.size': 6})
+
+__LOG_SCALE__ = True
+
+
+def get_list():
+    freq_list = []
+    for i in range(6):
+        freq = 200 * i + 25
+        if 0 < freq < 1000:
+            freq_list.append(freq)
+        freq = 200 * i - 25
+        if 0 < freq < 1000:
+            freq_list.append(freq)
+    return freq_list
+
+
+def get_loc():
+    for i in cycle([10, 14]):
+        yield i
+
+
+__LOC__ = get_loc()
+
+LS = get_line_style()
+
+
+def plot(damping_type, a, freq_n: float):
+    _, freq, window_amp = get_window(1000, True)
+    mask = np.isin(freq, get_list())
+
+    _, amp = compute_response(damping_type, a, freq_n)
+
+    total_amp = np.abs(amp * window_amp)
+
+    fig = plt.figure(figsize=(6, 3), dpi=200)
+    plt.title(rf'{damping_type.lower()} proportional damping, $a_1={a}$, $f_n={freq_n}$ Hz')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel(r'Magnitude $|\hat{m}|$')
+    plt.plot(freq, np.maximum(1e-12, total_amp))
+    cherry = total_amp[mask]
+    plt.scatter(freq[mask], cherry)
+    for xx, yy in zip(freq[mask], cherry):
+        plt.annotate(f"{yy:.2e}", (xx, yy), textcoords="offset points", xytext=(0, next(__LOC__)), ha='center',
+                     bbox=dict(boxstyle="square,pad=0", fc="white", ec='none'))
+    print(np.abs(amp[mask]))
+    if __LOG_SCALE__:
+        plt.yscale('log')
+        plt.ylim(compute_range(cherry))
+    plt.grid(True)
+    fig.tight_layout()
+    fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}-{int(1e5 * a)}.eps', format='eps')
+
+
+def signal(duration):
+    o_time = np.linspace(0, duration, int(duration * sampling_f), endpoint=False)
+    o_sine_wave = np.sin(2 * np.pi * natural_f * o_time)
+
+    return np.vstack((o_time, o_sine_wave)).T
+
+
+def process_result():
+    fig = plt.figure(figsize=(6, 4), dpi=200)
+    fig.add_subplot(211)
+    plt.title(rf'damping force history of the SDOF system')
+    plt.xlabel('Time (s)')
+    plt.ylabel(r'Damping Force $F_d$')
+    with h5py.File('../Model/PureSine/Interpolation.h5', 'r') as f:
+        data = f['R2-DF']['R2-DF2']
+        plt.plot(data[:, 0], data[:, 1], linewidth=1)
+        plt.xlim([0, np.max(data[:, 0])])
+
+    with h5py.File('../Model/PureSine/Analytical.h5', 'r') as f:
+        data = f['R2-DF']['R2-DF2']
+        plt.plot(data[:, 0], data[:, 1], linewidth=2, linestyle='--', c='#e41a1c')
+
+    plt.grid(True, which='both')
+    plt.legend(['interpolated external load', 'analytical external load'])
+
+    fig.add_subplot(212)
+    plt.title('frequency response of damping force of the SDOF system')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel(r'Magnitude of Damping Force $F_d$')
+
+    with h5py.File('../Model/PureSine/Interpolation.h5', 'r') as f:
+        data = f['R2-DF']['R2-DF2']
+        o_amplitude = 2 * np.fft.rfft(data[:, 1]) / len(data[:, 1])
+        o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, data[1, 0] - data[0, 0])
+
+        plt.plot(o_freq, np.abs(o_amplitude))
+
+        plt.xlim([0, np.max(o_freq)])
+
+    with h5py.File('../Model/PureSine/Analytical.h5', 'r') as f:
+        data = f['R2-DF']['R2-DF2']
+        o_amplitude = 2 * np.fft.rfft(data[:, 1]) / len(data[:, 1])
+        o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, data[1, 0] - data[0, 0])
+
+        plt.plot(o_freq, np.abs(o_amplitude), linewidth=2, linestyle='--', c='#e41a1c')
+
+    plt.legend(['interpolated external load', 'analytical external load'])
+    plt.grid(True, which='both')
+    fig.tight_layout()
+    fig.savefig(f'../PIC/InterpolationExample.eps', format='eps')
+
+
+if __name__ == '__main__':
+    plot('Stiffness', .0001, 200)
+
+    np.savetxt('../MODEL/PureSine/motion', signal(5), fmt='%.15e')
+
+    process_result()

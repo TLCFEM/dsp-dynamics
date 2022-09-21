@@ -45,7 +45,8 @@ def add_label(x, y):
             loc = 10
         else:
             loc = 4
-        plt.annotate(f"{yy:.3f}", (xx, yy), textcoords="offset points", xytext=(0, loc), ha='center')
+        plt.annotate(f"{yy:.2e}", (xx, yy), textcoords="offset points", xytext=(0, loc), ha='center',
+                     bbox=dict(boxstyle="square,pad=0", fc="white", ec='none'))
 
 
 def compute_range(array):
@@ -56,6 +57,21 @@ def compute_range(array):
         y_max += 1
     y_min = min(y_max - 3, math.floor(math.log10(np.min(valid_array))))
     return [10 ** y_min, 10 ** y_max]
+
+
+def get_window(length=512, half=False):
+    up_sampling_f = sampling_f * ratio
+    tri_window = signal.windows.triang(2 * ratio - 1)
+    if half:
+        window_amp = np.fft.rfft(tri_window, 2 * length)
+        window_freq = np.fft.rfftfreq(2 * len(window_amp) - 2, 1 / up_sampling_f)
+    else:
+        window_amp = np.fft.fftshift(np.fft.fft(tri_window, length))
+        window_freq = np.fft.fftshift(np.fft.fftfreq(len(window_amp), 1 / up_sampling_f))
+
+    window_amp /= np.max(np.abs(window_amp))
+
+    return tri_window, window_freq, window_amp
 
 
 def perform_computation():
@@ -75,10 +91,8 @@ def perform_computation():
     up_amplitude = 2 * np.fft.rfft(up_sine_wave) / len(up_sine_wave) * ratio
     up_freq = np.fft.rfftfreq(2 * len(up_amplitude) - 2, 1 / up_sampling_f)
 
-    tri_window = signal.windows.triang(2 * ratio - 1)
-    window_amp = np.abs(np.fft.fftshift(np.fft.fft(tri_window, 512)))
-    window_amp /= np.max(window_amp)
-    window_freq = np.fft.fftshift(np.fft.fftfreq(len(window_amp), 1 / up_sampling_f))
+    tri_window, window_freq, window_amp = get_window()
+    window_amp = np.abs(window_amp)
 
     conv = np.convolve(up_sine_wave, tri_window, mode='same')
     conv_fft = np.abs(2 * np.fft.rfft(conv) / len(conv))
@@ -123,6 +137,9 @@ def perform_computation():
     fig.add_subplot(111)
     add_plot(rf'triangular window', window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)), 'Frequency (Hz)',
              'Amplitude (dB)')
+    plt.plot(window_freq, 20 * np.log10(np.maximum(np.square(np.sinc(window_freq / sampling_f)), 1e-12)),
+             linestyle='dashed')
+    plt.legend(['DFT', 'analytical'])
     plt.xlim([-xlim_freq[1], xlim_freq[1]])
     plt.ylim([-60, 10])
 
@@ -142,20 +159,6 @@ def perform_computation():
     plt.xlim(xlim_freq)
     plt.yscale('log')
     plt.ylim(compute_range(conv_fft))
-
-    # fig.add_subplot(413)
-    # add_stem(rf'$\omega{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_v, 'Frequency (Hz)', 'Amplitude')
-    # add_label(up_freq, conv_v)
-    # plt.xlim(xlim_freq)
-    # plt.yscale('log')
-    # plt.ylim(compute_range(conv_v))
-    #
-    # fig.add_subplot(414)
-    # add_stem(rf'$\omega^2{{}}u_i[n]$ spectrum $L={ratio}$', up_freq, conv_a, 'Frequency (Hz)', 'Amplitude')
-    # add_label(up_freq, conv_a)
-    # plt.xlim(xlim_freq)
-    # plt.yscale('log')
-    # plt.ylim(compute_range(conv_a))
 
     fig.tight_layout()
     fig.savefig('../PIC/Convolution.eps', format='eps')
