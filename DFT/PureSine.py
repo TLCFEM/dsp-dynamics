@@ -59,19 +59,34 @@ def compute_range(array):
     return [10 ** y_min, 10 ** y_max]
 
 
-def get_window(length=512, half=False):
+def get_window(length: int = 512, half: bool = False, window_type: str = 'tri'):
     up_sampling_f = sampling_f * ratio
-    tri_window = signal.windows.triang(2 * ratio - 1)
+    if window_type == 'tri':
+        window = signal.windows.triang(2 * ratio - 1)
+    else:
+        if window_type == 'flattop':
+            window = signal.windows.flattop(8 * ratio + 1)
+        elif window_type == 'blackmanharris':
+            window = signal.windows.blackmanharris(8 * ratio + 1)
+        elif window_type == 'cheb':
+            window = signal.windows.chebwin(8 * ratio + 1, 120)
+        else:
+            raise ValueError(f"Unknown window type: {window_type}")
+
+        cutoff = .2 / ratio
+        window *= cutoff * np.sinc(cutoff * (np.linspace(0, 8 * ratio, 8 * ratio + 1) - 4 * ratio))
+        window /= np.sum(window)
+
     if half:
-        window_amp = np.fft.rfft(tri_window, 2 * length)
+        window_amp = np.fft.rfft(window, 2 * length)
         window_freq = np.fft.rfftfreq(2 * len(window_amp) - 2, 1 / up_sampling_f)
     else:
-        window_amp = np.fft.fftshift(np.fft.fft(tri_window, length))
+        window_amp = np.fft.fftshift(np.fft.fft(window, length))
         window_freq = np.fft.fftshift(np.fft.fftfreq(len(window_amp), 1 / up_sampling_f))
 
     window_amp /= np.max(np.abs(window_amp))
 
-    return tri_window, window_freq, window_amp
+    return window, window_freq, window_amp
 
 
 def perform_computation():

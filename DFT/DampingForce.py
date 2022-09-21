@@ -34,6 +34,8 @@ __LOC__ = get_loc()
 
 LS = get_line_style()
 
+__SAVE__ = True
+
 
 def plot(damping_type, a, freq_n: float):
     _, freq, window_amp = get_window(1000, True)
@@ -59,7 +61,10 @@ def plot(damping_type, a, freq_n: float):
         plt.ylim(compute_range(cherry))
     plt.grid(True)
     fig.tight_layout()
-    fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}-{int(1e5 * a)}.eps', format='eps')
+    if __SAVE__:
+        fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}-{int(1e5 * a)}.eps', format='eps')
+    else:
+        plt.show()
 
 
 def signal(duration):
@@ -114,9 +119,25 @@ def process_result():
     fig.savefig(f'../PIC/InterpolationExample.eps', format='eps')
 
 
+def plot_window():
+    _, window_freq, window_amp = get_window(500, False, 'cheb')
+    window_amp = np.abs(window_amp)
+    fig = plt.figure(figsize=(6, 3), dpi=200)
+    plt.title('window function')
+    plt.xlabel('Frequency (Hz)')
+    plt.plot(window_freq, window_amp)
+    plt.plot(window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)))
+    plt.yscale('log')
+    plt.grid(True)
+    plt.xlim([-1000, 1000])
+    fig.show()
+
+
 if __name__ == '__main__':
     plot('Stiffness', .0001, 200)
 
     np.savetxt('../MODEL/PureSine/motion', signal(5), fmt='%.15e')
 
     process_result()
+
+    plot_window()
