@@ -75,12 +75,12 @@ def process_result():
     plt.title(rf'damping force history of the SDOF system')
     plt.xlabel('Time (s)')
     plt.ylabel(r'Damping Force $F_d$')
-    with h5py.File('../Model/PureSine/Interpolation.h5', 'r') as f:
+    with h5py.File('../MODEL/PureSine/Interpolation.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         plt.plot(data[:, 0], data[:, 1], linewidth=1)
         plt.xlim([0, np.max(data[:, 0])])
 
-    with h5py.File('../Model/PureSine/Analytical.h5', 'r') as f:
+    with h5py.File('../MODEL/PureSine/Analytical.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         plt.plot(data[:, 0], data[:, 1], linewidth=2, linestyle='--', c='#e41a1c')
 
@@ -92,7 +92,7 @@ def process_result():
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(r'Magnitude of Damping Force $F_d$')
 
-    with h5py.File('../Model/PureSine/Interpolation.h5', 'r') as f:
+    with h5py.File('../MODEL/PureSine/Interpolation.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         o_amplitude = 2 * np.fft.rfft(data[:, 1]) / len(data[:, 1])
         o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, data[1, 0] - data[0, 0])
@@ -101,7 +101,7 @@ def process_result():
 
         plt.xlim([0, np.max(o_freq)])
 
-    with h5py.File('../Model/PureSine/Analytical.h5', 'r') as f:
+    with h5py.File('../MODEL/PureSine/Analytical.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         o_amplitude = 2 * np.fft.rfft(data[:, 1]) / len(data[:, 1])
         o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, data[1, 0] - data[0, 0])
