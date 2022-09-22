@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from FundamentalSolution import compute_response, get_line_style
-from PureSine import get_window, compute_range, natural_f, sampling_f
+from PureSine import get_window, compute_range, sampling_f, duration, ratio, get_waveform, zero_stuff, natural_f
 
 matplotlib.rcParams.update({'font.size': 6})
 
@@ -37,8 +37,8 @@ LS = get_line_style()
 __SAVE__ = True
 
 
-def plot(damping_type, a, freq_n: float):
-    _, freq, window_amp = get_window(1000, True)
+def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
+    _, freq, window_amp = get_window(1000, True, win_type)
     mask = np.isin(freq, get_list())
 
     _, amp = compute_response(damping_type, a, freq_n)
@@ -46,7 +46,7 @@ def plot(damping_type, a, freq_n: float):
     total_amp = np.abs(amp * window_amp)
 
     fig = plt.figure(figsize=(6, 3), dpi=200)
-    plt.title(rf'{damping_type.lower()} proportional damping, $a_1={a}$, $f_n={freq_n}$ Hz')
+    plt.title(rf'{damping_type.lower()} proportional damping with {win_type} window, $a_1={a}$, $f_n={freq_n}$ Hz')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(r'Magnitude $|\hat{m}|$')
     plt.plot(freq, np.maximum(1e-12, total_amp))
@@ -67,8 +67,8 @@ def plot(damping_type, a, freq_n: float):
         plt.show()
 
 
-def signal(duration):
-    o_time = np.linspace(0, duration, int(duration * sampling_f), endpoint=False)
+def signal(t):
+    o_time = np.linspace(0, t, int(t * sampling_f), endpoint=False)
     o_sine_wave = np.sin(2 * np.pi * natural_f * o_time)
 
     return np.vstack((o_time, o_sine_wave)).T
@@ -120,9 +120,10 @@ def process_result():
 
 
 def plot_window():
-    _, window_freq, window_amp = get_window(500, False, 'cheb')
+    window, window_freq, window_amp = get_window(500, False, 'blackmanharris')
     window_amp = np.abs(window_amp)
     fig = plt.figure(figsize=(6, 3), dpi=200)
+    fig.add_subplot(211)
     plt.title('window function')
     plt.xlabel('Frequency (Hz)')
     plt.plot(window_freq, window_amp)
@@ -130,10 +131,24 @@ def plot_window():
     plt.yscale('log')
     plt.grid(True)
     plt.xlim([-1000, 1000])
+
+    fig.add_subplot(212)
+    o_time, o_sine_wave = get_waveform(int(duration * sampling_f))
+    up_time, up_sine_wave = zero_stuff(o_time, o_sine_wave, ratio)
+
+    plt.plot(up_time, up_sine_wave)
+    plt.plot(up_time, np.convolve(up_sine_wave, window, mode='same'))
+
+    fig.tight_layout()
     fig.show()
 
 
 if __name__ == '__main__':
+    plot('Stiffness', .0001, 200, 'blackmanharris')
+    plot('Stiffness', .0001, 200, 'hann')
+    plot('Stiffness', .0001, 200, 'hamming')
+    plot('Stiffness', .0001, 200, 'kaiser')
+    plot('Mass', .001, 225, 'cheb')
     plot('Stiffness', .0001, 200)
 
     np.savetxt('../MODEL/PureSine/motion', signal(5), fmt='%.15e')

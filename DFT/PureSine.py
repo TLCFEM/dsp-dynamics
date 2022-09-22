@@ -50,7 +50,7 @@ def add_label(x, y):
 
 
 def compute_range(array):
-    valid_array = array[array > 1E-8]
+    valid_array = array[array > 1E-10]
     y_actual = math.log10(np.max(valid_array))
     y_max = math.ceil(y_actual)
     if y_max < y_actual + .2:
@@ -64,18 +64,25 @@ def get_window(length: int = 512, half: bool = False, window_type: str = 'tri'):
     if window_type == 'tri':
         window = signal.windows.triang(2 * ratio - 1)
     else:
+        bin_num = 8 * ratio
         if window_type == 'flattop':
-            window = signal.windows.flattop(8 * ratio + 1)
+            window = signal.windows.flattop(bin_num + 1)
         elif window_type == 'blackmanharris':
-            window = signal.windows.blackmanharris(8 * ratio + 1)
+            window = signal.windows.blackmanharris(bin_num + 1)
+        elif window_type == 'hann':
+            window = signal.windows.hann(bin_num + 1)
+        elif window_type == 'hamming':
+            window = signal.windows.hamming(bin_num + 1)
+        elif window_type == 'kaiser':
+            window = signal.windows.kaiser(bin_num + 1, 9)
         elif window_type == 'cheb':
-            window = signal.windows.chebwin(8 * ratio + 1, 120)
+            window = signal.windows.chebwin(bin_num + 1, 80)
         else:
             raise ValueError(f"Unknown window type: {window_type}")
 
-        cutoff = .2 / ratio
-        window *= cutoff * np.sinc(cutoff * (np.linspace(0, 8 * ratio, 8 * ratio + 1) - 4 * ratio))
-        window /= np.sum(window)
+        cutoff = 1 / ratio
+        window *= cutoff * np.sinc(cutoff * (np.linspace(0, bin_num, bin_num + 1) - bin_num // 2))
+        window *= ratio / np.sum(window)
 
     if half:
         window_amp = np.fft.rfft(window, 2 * length)
@@ -89,22 +96,31 @@ def get_window(length: int = 512, half: bool = False, window_type: str = 'tri'):
     return window, window_freq, window_amp
 
 
+def get_waveform(samples: int):
+    x = np.linspace(0, duration, samples, endpoint=False)
+    y = np.sin(2 * np.pi * natural_f * x)
+    return x, y
+
+
+def zero_stuff(x, y, scale):
+    up_x = np.linspace(0, duration, scale * len(x), endpoint=False)
+    up_y = np.zeros(len(up_x))
+    up_y[::scale] = y
+    return up_x, up_y
+
+
+def perform_fft(y, scale=1):
+    amplitude = 2 * np.fft.rfft(y) / len(y) * scale
+    freq = np.fft.rfftfreq(2 * len(amplitude) - 2, 1 / sampling_f / scale)
+    return freq, amplitude
+
+
 def perform_computation():
-    samples = int(duration * sampling_f)
-    up_sampling_f = sampling_f * ratio
+    o_time, o_sine_wave = get_waveform(int(duration * sampling_f))
+    o_freq, o_amplitude = perform_fft(o_sine_wave)
 
-    o_time = np.linspace(0, duration, samples, endpoint=False)
-    o_sine_wave = np.sin(2 * np.pi * natural_f * o_time)
-
-    up_time = np.linspace(0, duration, ratio * samples, endpoint=False)
-    up_sine_wave = np.zeros(ratio * samples)
-    up_sine_wave[::ratio] = o_sine_wave
-
-    o_amplitude = 2 * np.fft.rfft(o_sine_wave) / len(o_sine_wave)
-    o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, 1 / sampling_f)
-
-    up_amplitude = 2 * np.fft.rfft(up_sine_wave) / len(up_sine_wave) * ratio
-    up_freq = np.fft.rfftfreq(2 * len(up_amplitude) - 2, 1 / up_sampling_f)
+    up_time, up_sine_wave = zero_stuff(o_time, o_sine_wave, ratio)
+    up_freq, up_amplitude = perform_fft(up_sine_wave, ratio)
 
     tri_window, window_freq, window_amp = get_window()
     window_amp = np.abs(window_amp)
@@ -114,6 +130,7 @@ def perform_computation():
     conv_v = np.multiply(np.abs(up_freq), conv_fft)
     conv_a = np.multiply(np.abs(up_freq), conv_v)
 
+    up_sampling_f = sampling_f * ratio
     margin = duration / 30
     xlim_time = [-margin, duration + margin]
     margin *= up_sampling_f / duration / 2
