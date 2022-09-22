@@ -66,6 +66,8 @@ def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
     else:
         plt.show()
 
+    return freq[mask], cherry
+
 
 def signal(t):
     o_time = np.linspace(0, t, int(t * sampling_f), endpoint=False)
@@ -74,7 +76,7 @@ def signal(t):
     return np.vstack((o_time, o_sine_wave)).T
 
 
-def process_result():
+def process_result(x, y):
     fig = plt.figure(figsize=(6, 4), dpi=200)
     fig.add_subplot(211)
     plt.title(rf'damping force history of the SDOF system')
@@ -96,6 +98,7 @@ def process_result():
     plt.title('frequency response of damping force of the SDOF system')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(r'Magnitude of Damping Force $F_d$')
+    plt.scatter(x, y, facecolors='none', edgecolors='grey')
 
     with h5py.File('../MODEL/PureSine/Interpolation.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
@@ -113,10 +116,14 @@ def process_result():
 
         plt.plot(o_freq, np.abs(o_amplitude), linewidth=2, linestyle='--', c='#e41a1c')
 
-    plt.legend(['interpolated external load', 'analytical external load'])
+    plt.legend(['theoretical values (for interpolated load)', 'interpolated external load', 'analytical external load'])
     plt.grid(True, which='both')
     fig.tight_layout()
-    fig.savefig(f'../PIC/InterpolationExample.eps', format='eps')
+
+    if __SAVE__:
+        fig.savefig(f'../PIC/InterpolationExample.eps', format='eps')
+    else:
+        plt.show()
 
 
 def plot_window():
@@ -149,10 +156,10 @@ if __name__ == '__main__':
     plot('Stiffness', .0001, 200, 'hamming')
     plot('Stiffness', .0001, 200, 'kaiser')
     plot('Mass', .001, 225, 'cheb')
-    plot('Stiffness', .0001, 200)
+    x, y = plot('Stiffness', .0001, 200)
 
     np.savetxt('../MODEL/PureSine/motion', signal(5), fmt='%.15e')
 
-    process_result()
+    process_result(x, y)
 
     plot_window()
