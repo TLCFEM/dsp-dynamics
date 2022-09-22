@@ -133,11 +133,14 @@ def plot_window(win_type: str = 'tri'):
     fig.add_subplot(211)
     plt.title(f'{win_type} window function')
     plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Amplitude (dB)')
     plt.plot(window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)))
     plt.grid(True)
     plt.xlim([-1000, 1000])
 
     fig.add_subplot(212)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
     o_time, o_sine_wave = get_waveform(int(duration * sampling_f))
     up_time, up_sine_wave = zero_stuff(o_time, o_sine_wave, ratio)
 
