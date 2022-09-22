@@ -126,16 +126,14 @@ def process_result(x, y):
         plt.show()
 
 
-def plot_window():
-    window, window_freq, window_amp = get_window(500, False, 'blackmanharris')
+def plot_window(win_type: str = 'tri'):
+    window, window_freq, window_amp = get_window(500, False, win_type)
     window_amp = np.abs(window_amp)
     fig = plt.figure(figsize=(6, 3), dpi=200)
     fig.add_subplot(211)
-    plt.title('window function')
+    plt.title(f'{win_type} window function')
     plt.xlabel('Frequency (Hz)')
-    plt.plot(window_freq, window_amp)
     plt.plot(window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)))
-    plt.yscale('log')
     plt.grid(True)
     plt.xlim([-1000, 1000])
 
@@ -143,7 +141,14 @@ def plot_window():
     o_time, o_sine_wave = get_waveform(int(duration * sampling_f))
     up_time, up_sine_wave = zero_stuff(o_time, o_sine_wave, ratio)
 
-    plt.plot(up_time, up_sine_wave)
+    markerline, stemline, baseline = plt.stem(up_time, up_sine_wave, markerfmt='ro', linefmt='--')
+    plt.setp(stemline, linewidth=0)
+    plt.setp(markerline, markersize=2)
+    plt.setp(stemline, color='#377eb8')
+    plt.setp(baseline, color='#555555')
+    plt.setp(baseline, linewidth=.1)
+    plt.grid(True)
+
     plt.plot(up_time, np.convolve(up_sine_wave, window, mode='same'))
 
     fig.tight_layout()
@@ -162,4 +167,4 @@ if __name__ == '__main__':
 
     process_result(x, y)
 
-    plot_window()
+    plot_window('blackmanharris')
