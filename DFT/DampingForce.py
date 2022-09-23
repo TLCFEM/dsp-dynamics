@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from FundamentalSolution import compute_response, get_line_style
-from PureSine import get_window, compute_range, sampling_f, duration, ratio, get_waveform, zero_stuff, natural_f
+from PureSine import compute_range, duration, get_waveform, get_window, natural_f, ratio, sampling_f, zero_stuff
 
 matplotlib.rcParams.update({'font.size': 6})
 
@@ -38,7 +38,7 @@ __SAVE__ = True
 
 
 def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
-    _, freq, window_amp = get_window(1000, True, win_type)
+    _, freq, window_amp = get_window(ratio * sampling_f // 2, True, win_type)
     mask = np.isin(freq, get_list())
 
     _, amp = compute_response(damping_type, a, freq_n)
@@ -67,6 +67,24 @@ def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
         plt.show()
 
     return freq[mask], cherry
+
+
+def surface(damping_type, a, win_type: str = 'tri'):
+    _, freq, window_amp = get_window(ratio * sampling_f // 2, True, win_type)
+    x, y = np.meshgrid(freq, freq)
+
+    array = np.zeros((len(freq), len(freq)))
+    for i in range(len(window_amp)):
+        _, amp = compute_response(damping_type, a, max(float(i), .01))
+        array[:, i] = np.abs(amp * window_amp)
+
+    fig, ax = plt.subplots()
+    surf = ax.pcolormesh(x, y, np.log10(np.maximum(1e-14, array)).T, cmap='PiYG')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Natural Frequency (Hz)')
+    fig.colorbar(surf, aspect=40)
+    fig.tight_layout()
+    fig.show()
 
 
 def signal(t):
@@ -164,10 +182,12 @@ if __name__ == '__main__':
     plot('Stiffness', .0001, 200, 'hamming')
     plot('Stiffness', .0001, 200, 'kaiser')
     plot('Mass', .001, 225, 'cheb')
-    x, y = plot('Stiffness', .0001, 200)
+    xx, yy = plot('Stiffness', .0001, 200)
 
     np.savetxt('../MODEL/PureSine/motion', signal(5), fmt='%.15e')
 
-    process_result(x, y)
+    process_result(xx, yy)
 
-    plot_window('blackmanharris')
+    plot_window('tri')
+
+    surface('Mass', .001, 'tri')

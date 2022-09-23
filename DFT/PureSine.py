@@ -1,9 +1,9 @@
 import math
 
 import matplotlib
-from scipy import signal
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
+from scipy import signal
 
 matplotlib.rcParams.update({'font.size': 6})
 
@@ -81,8 +81,9 @@ def get_window(length: int = 512, half: bool = False, window_type: str = 'tri'):
             raise ValueError(f"Unknown window type: {window_type}")
 
         cutoff = 1 / ratio
-        window *= cutoff * np.sinc(cutoff * (np.linspace(0, bin_num, bin_num + 1) - bin_num // 2))
-        window *= ratio / np.sum(window)
+        window *= np.sinc(cutoff * (np.linspace(0, bin_num, bin_num + 1) - bin_num // 2))
+        window /= np.sum(window)
+        window *= ratio
 
     if half:
         window_amp = np.fft.rfft(window, 2 * length)
