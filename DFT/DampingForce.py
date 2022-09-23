@@ -182,11 +182,11 @@ if __name__ == '__main__':
     plot('Stiffness', .0001, 200, 'hamming')
     plot('Stiffness', .0001, 200, 'kaiser')
     plot('Mass', .001, 225, 'cheb')
-    xx, yy = plot('Stiffness', .0001, 200)
+    xxx, yyy = plot('Stiffness', .0001, 200)
 
     np.savetxt('../MODEL/PureSine/motion', signal(5), fmt='%.15e')
 
-    process_result(xx, yy)
+    process_result(xxx, yyy)
 
     plot_window('tri')
 
