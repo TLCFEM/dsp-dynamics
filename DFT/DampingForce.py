@@ -84,15 +84,23 @@ def surface(damping_type, a, win_type: str = 'tri'):
     array_norm = colors.LogNorm(vmin=array_min, vmax=array_max)
     fig = plt.figure(figsize=(3, 2.8), dpi=400)
     surf = plt.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='RdYlBu', rasterized=True)
-    plt.colorbar(surf, aspect=40, ax=plt.gca(), shrink=.6)
+    plt.colorbar(surf, aspect=40, ax=plt.gca(), shrink=.75)
     plt.xlabel(r'External Load Frequency $\omega$ (Hz)')
-    plt.text(0.9, 0.95, rf'$\zeta={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    if damping_type == 'Constant':
+        plt.text(0.85, 0.95, rf'$\zeta={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    elif damping_type == 'Stiffness':
+        plt.text(0.85, 0.95, rf'$a_1={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    elif damping_type == 'Mass':
+        plt.text(0.85, 0.95, rf'$a_0={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    else:
+        raise ValueError('Unknown Damping Type')
     plt.ylabel(r'Natural Frequency $\omega_n$ (Hz)')
     plt.gca().set_aspect('equal')
     fig.tight_layout()
     if __SAVE__:
         fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}-{int(1e5 * a)}.pdf', format='pdf')
     else:
+        plt.title(rf'{damping_type.lower()} damping {win_type} window')
         fig.show()
 
 
@@ -201,6 +209,15 @@ if __name__ == '__main__':
 
     surface('Constant', .02, 'tri')
     surface('Constant', .02, 'blackmanharris')
+    __SAVE__ = False
     surface('Constant', .02, 'hamming')
     surface('Constant', .02, 'cheb')
     surface('Constant', .02, 'kaiser')
+    surface('Stiffness', .0002, 'tri')
+    surface('Stiffness', .0002, 'hamming')
+    surface('Stiffness', .0002, 'cheb')
+    surface('Stiffness', .0002, 'kaiser')
+    surface('Mass', 2, 'tri')
+    surface('Mass', 2, 'hamming')
+    surface('Mass', 2, 'cheb')
+    surface('Mass', 2, 'kaiser')
