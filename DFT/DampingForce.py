@@ -3,7 +3,7 @@ from itertools import cycle
 import h5py as h5py
 import matplotlib
 import numpy as np
-from matplotlib import pyplot as plt
+from matplotlib import colors, pyplot as plt
 
 from FundamentalSolution import compute_response, get_line_style
 from PureSine import compute_range, duration, get_waveform, get_window, natural_f, ratio, sampling_f, zero_stuff
@@ -78,11 +78,15 @@ def surface(damping_type, a, win_type: str = 'tri'):
         _, amp = compute_response(damping_type, a, max(float(i), .01))
         array[:, i] = np.abs(amp * window_amp)
 
+    array /= np.max(array)
+    array_min = max(1e-14, np.min(array))
+    array_max = np.max(array)
+    array_norm = colors.LogNorm(vmin=array_min, vmax=array_max)
     fig, ax = plt.subplots()
-    surf = ax.pcolormesh(x, y, np.log10(np.maximum(1e-14, array)).T, cmap='PiYG')
+    surf = ax.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='inferno')
+    fig.colorbar(surf, aspect=40, ax=ax)
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Natural Frequency (Hz)')
-    fig.colorbar(surf, aspect=40)
     fig.tight_layout()
     fig.show()
 
@@ -188,6 +192,6 @@ if __name__ == '__main__':
 
     process_result(xxx, yyy)
 
-    plot_window('tri')
+    plot_window('kaiser')
 
-    surface('Mass', .001, 'tri')
+    surface('Constant', .02, 'blackmanharris')

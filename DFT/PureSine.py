@@ -64,7 +64,7 @@ def get_window(length: int = 512, half: bool = False, window_type: str = 'tri'):
     if window_type == 'tri':
         window = signal.windows.triang(2 * ratio - 1)
     else:
-        bin_num = 8 * ratio
+        bin_num = 32 * ratio
         if window_type == 'flattop':
             window = signal.windows.flattop(bin_num + 1)
         elif window_type == 'blackmanharris':
