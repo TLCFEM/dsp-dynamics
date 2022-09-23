@@ -194,6 +194,20 @@ For comparison, the external load is provided in both forms: 1) sampled at \SI{2
 \caption{damping force history of the SDOF system (transient solution included)}\label{fig:sdof_force}
 \end{figure}
 The interpolated external load overshoots by around \SI{50}{\percent} due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}. The values agree with \figref{fig:k_proportional_damping}.
+
+It is then possible to evaluate the possibility of such an overshoot over the whole frequency domain. One example is given in \figref{fig:map}.
+\begin{figure}[htb]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/ConstantMapTri-2000}
+\caption{triangular window}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/ConstantMapBlackmanharris-2000}
+\caption{Blackman--Harris window}
+\end{subfigure}
+\caption{normalised damping force magnitude with constant damping ratio}\label{fig:map}
+\end{figure}
 \section{Remedies and Recommendations}
 Before discussing the remedies and recommendations, it must be emphasised that according to \eqsref{eq:general_damping_force}, as long as damping is considered, no matter which type, the maximum possible magnitude of damping force of a specific frequency equals to that of the upsampled (after filtering) input (external load in this case). Furthermore, it is also independent of the magnitude of damping, small or large. In fact, a large damping ratio gives flat $\hat{k}\left(f\right)$, which reduces the difference between low frequency response and high frequency response. It is thus less likely to overshoot regarding damping force (only). It can also be concluded that, as long as the damping model is not point--based (for example, the Wilson--Penzien model, which only responds to selected frequency points), the system is \textbf{not} immune from spurious damping force.
 

@@ -34,7 +34,7 @@ __LOC__ = get_loc()
 
 LS = get_line_style()
 
-__SAVE__ = False
+__SAVE__ = True
 
 
 def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
@@ -62,7 +62,7 @@ def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
     plt.grid(True)
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}-{int(1e5 * a)}.eps', format='eps')
+        fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}-{int(1e5 * a)}.pdf', format='pdf')
     else:
         plt.show()
 
@@ -82,18 +82,16 @@ def surface(damping_type, a, win_type: str = 'tri'):
     array_min = max(1e-14, np.min(array))
     array_max = np.max(array)
     array_norm = colors.LogNorm(vmin=array_min, vmax=array_max)
-    fig = plt.figure(figsize=(3.5, 3), dpi=200)
-    if damping_type == 'Constant':
-        plt.title(fr'{damping_type.lower()} damping with {win_type} window')
-    surf = plt.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='RdYlBu' )
-    plt.colorbar(surf, aspect=40)
-    plt.xlabel('External Load Frequency (Hz)')
+    fig = plt.figure(figsize=(3, 2.8), dpi=400)
+    surf = plt.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='RdYlBu', rasterized=True)
+    plt.colorbar(surf, aspect=40, ax=plt.gca(), shrink=.6)
+    plt.xlabel(r'External Load Frequency $\omega$ (Hz)')
     plt.text(0.9, 0.95, rf'$\zeta={a}$', transform=plt.gca().transAxes, ha='center', va='center')
-    plt.ylabel('Natural Frequency (Hz)')
+    plt.ylabel(r'Natural Frequency $\omega_n$ (Hz)')
     plt.gca().set_aspect('equal')
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}-{int(1e5 * a)}.eps', format='eps')
+        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}-{int(1e5 * a)}.pdf', format='pdf')
     else:
         fig.show()
 
@@ -150,7 +148,7 @@ def process_result(x, y):
     fig.tight_layout()
 
     if __SAVE__:
-        fig.savefig(f'../PIC/InterpolationExample.eps', format='eps')
+        fig.savefig(f'../PIC/InterpolationExample.pdf', format='pdf')
     else:
         plt.show()
 
@@ -203,3 +201,6 @@ if __name__ == '__main__':
 
     surface('Constant', .02, 'tri')
     surface('Constant', .02, 'blackmanharris')
+    surface('Constant', .02, 'hamming')
+    surface('Constant', .02, 'cheb')
+    surface('Constant', .02, 'kaiser')
