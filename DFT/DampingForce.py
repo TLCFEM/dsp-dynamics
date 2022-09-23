@@ -34,7 +34,7 @@ __LOC__ = get_loc()
 
 LS = get_line_style()
 
-__SAVE__ = True
+__SAVE__ = False
 
 
 def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
@@ -82,13 +82,20 @@ def surface(damping_type, a, win_type: str = 'tri'):
     array_min = max(1e-14, np.min(array))
     array_max = np.max(array)
     array_norm = colors.LogNorm(vmin=array_min, vmax=array_max)
-    fig, ax = plt.subplots()
-    surf = ax.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='inferno')
-    fig.colorbar(surf, aspect=40, ax=ax)
-    plt.xlabel('Frequency (Hz)')
+    fig = plt.figure(figsize=(3.5, 3), dpi=200)
+    if damping_type == 'Constant':
+        plt.title(fr'{damping_type.lower()} damping with {win_type} window')
+    surf = plt.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='RdYlBu' )
+    plt.colorbar(surf, aspect=40)
+    plt.xlabel('External Load Frequency (Hz)')
+    plt.text(0.9, 0.95, rf'$\zeta={a}$', transform=plt.gca().transAxes, ha='center', va='center')
     plt.ylabel('Natural Frequency (Hz)')
+    plt.gca().set_aspect('equal')
     fig.tight_layout()
-    fig.show()
+    if __SAVE__:
+        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}-{int(1e5 * a)}.eps', format='eps')
+    else:
+        fig.show()
 
 
 def signal(t):
@@ -194,4 +201,5 @@ if __name__ == '__main__':
 
     plot_window('kaiser')
 
+    surface('Constant', .02, 'tri')
     surface('Constant', .02, 'blackmanharris')
