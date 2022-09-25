@@ -62,6 +62,14 @@ def stiffness_kernel(f, f_n, a):
     return numerator / denom
 
 
+def inertial_kernel(f, f_n, a):
+    beta = f / f_n
+    zeta = a
+    numerator = -beta ** 2
+    denom = 1 - beta ** 2 + 2 * beta * zeta * 1j
+    return numerator / denom
+
+
 LS = get_line_style()
 
 
@@ -74,6 +82,12 @@ def compute_response(damping_type, a, freq_n: float):
         magnitude = mass_kernel(freq, freq_n, a)
     elif damping_type == 'Stiffness':
         magnitude = stiffness_kernel(freq, freq_n, a)
+    elif damping_type == 'Inertial':
+        magnitude = inertial_kernel(freq, freq_n, a)
+    elif damping_type == 'InertialStiffness':
+        magnitude = inertial_kernel(freq, freq_n, a * 2 * math.pi * freq_n)
+    elif damping_type == 'InertialMass':
+        magnitude = inertial_kernel(freq, freq_n, a / 2 / math.pi / freq_n)
     else:
         raise ValueError('Unknown damping type')
 
@@ -82,11 +96,11 @@ def compute_response(damping_type, a, freq_n: float):
 
 def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
     if damping_type == 'Constant':
-        fig = plt.figure(figsize=(6, 3), dpi=200)
+        fig = plt.figure(figsize=(6, 1.8), dpi=200)
     else:
-        fig = plt.figure(figsize=(6, 3), dpi=200)
+        fig = plt.figure(figsize=(6, 1.8), dpi=200)
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel(r'Magnitude $|\hat{k}|$')
+    plt.ylabel(r'Magnitude $|\hat{k_v}|$')
     plt.grid(True, which='both', linewidth=.2, linestyle='-')
     plt.gca().xaxis.set_minor_locator(matplotlib.ticker.AutoMinorLocator(2))
 
@@ -109,6 +123,9 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
         plt.title(rf'frequency response of {damping_type.lower()} proportional damping ($a_1={a}$)')
         plt.legend(
             [rf'$f_n={v:3.1f}$ Hz, $\omega_n={v * 2 * np.pi:06.1f}$ rad/s, $\zeta={a * v * 2 * np.pi:.3f}$' for v in
+             all_freq], handlelength=3, ncol=n_col, loc=legend_location)
+        plt.legend(
+            [rf'$f_n={v:3.1f}$ Hz, $\zeta={a * v * 2 * np.pi:.3f}$' for v in
              all_freq], handlelength=3, ncol=n_col, loc=legend_location)
     elif damping_type == 'Mass':
         plt.title(rf'frequency response of {damping_type.lower()} proportional damping ($a_0={a}$)')

@@ -45,10 +45,10 @@ def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
 
     total_amp = np.abs(amp * window_amp)
 
-    fig = plt.figure(figsize=(6, 3), dpi=200)
+    fig = plt.figure(figsize=(6, 2), dpi=200)
     plt.title(rf'{damping_type.lower()} proportional damping with {win_type} window, $a_1={a}$, $f_n={freq_n}$ Hz')
     plt.xlabel('Frequency (Hz)')
-    plt.ylabel(r'Magnitude $|\hat{m}|$')
+    plt.ylabel(r'Magnitude $|\hat{m_v}|$')
     plt.plot(freq, np.maximum(1e-12, total_amp))
     cherry = total_amp[mask]
     plt.scatter(freq[mask], cherry)
@@ -116,7 +116,7 @@ def process_result(x, y):
     fig.add_subplot(211)
     plt.title(rf'damping force history of the SDOF system')
     plt.xlabel('Time (s)')
-    plt.ylabel(r'Damping Force $F_d$')
+    plt.ylabel(r'Damping Force $F_v$')
     with h5py.File('../MODEL/PureSine/Interpolation.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         plt.plot(data[:, 0], data[:, 1], linewidth=1)
