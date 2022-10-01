@@ -65,8 +65,8 @@ its frequency response $G[n]$ can be obtained via the discrete Fourier transform
 \caption{triangular window in frequency domain}\label{fig:tri_window}
 \end{figure}
 The analytical expression can be obtained via convoluting two rectangular signal, which gives
-\begin{gather}
-\hat{g}\left(f\right)=\text{sinc}^2\left(f/f_s\right)
+\begin{gather}\label{eq:tri_kernel}
+\hat{g}\left(f\right)=\text{sinc}^2\left(f/f_s\right).
 \end{gather}
 
 By the convolution theorem, the upsampled signal can be obtained by either performing the convolution in time domain or multiplication in frequency domain.
@@ -121,8 +121,8 @@ which links external load spectrum $\hat{p}\left(\omega\right)$ to the damping f
 Now consider three different types of damping.
 \paragraph{Constant Damping}
 Let $c$ (and $\zeta$) be a constant, then
-\begin{gather}
-\hat{F_v}\left(\omega\right)=\hat{p}\left(\omega\right)\cdot\dfrac{i\left(2\zeta\beta\right)}{\left(1-\beta^2\right)+i\left(2\zeta\beta\right)}.
+\begin{gather}\label{eq:damping_constant}
+\hat{k_v}\left(\omega\right)=\dfrac{i\left(2\zeta\beta\right)}{\left(1-\beta^2\right)+i\left(2\zeta\beta\right)}.
 \end{gather}
 \paragraph{Mass Proportional Damping}
 Let $c$ be proportional to mass such that $c=2a_0m$, then
@@ -131,8 +131,8 @@ Let $c$ be proportional to mass such that $c=2a_0m$, then
 \zeta\beta=\dfrac{a_0\omega}{\omega_n^2},
 \end{gather}
 so that
-\begin{gather}
-\hat{F_v}\left(\omega\right)=\hat{p}\left(\omega\right)\cdot\dfrac{i\left(2a_0\omega\right)}{\left(\omega_n^2-\omega^2\right)+i\left(2a_0\omega\right)}.
+\begin{gather}\label{eq:damping_mass}
+\hat{k_v}\left(\omega\right)=\dfrac{i\left(2a_0\omega\right)}{\left(\omega_n^2-\omega^2\right)+i\left(2a_0\omega\right)}.
 \end{gather}
 \paragraph{Stiffness Proportional Damping}
 Let $c$ be proportional to stiffness such that $c=2a_1k$, then
@@ -141,15 +141,15 @@ Let $c$ be proportional to stiffness such that $c=2a_1k$, then
 \zeta\beta=a_1\omega,
 \end{gather}
 so that
-\begin{gather}
-\hat{F_v}\left(\omega\right)=\hat{p}\left(\omega\right)\cdot\dfrac{i\left(2a_1\omega\right)}{\left(1-\beta^2\right)+i\left(2a_1\omega\right)}.
+\begin{gather}\label{eq:damping_stiffness}
+\hat{k_v}\left(\omega\right)=\dfrac{i\left(2a_1\omega\right)}{\left(1-\beta^2\right)+i\left(2a_1\omega\right)}.
 \end{gather}
 
-It can be noticed that all three expressions of $\hat{F_v}\left(\omega\right)$ possess a similar form
+It can be noticed that all three expressions of $\hat{k_v}\left(\omega\right)$ possess a similar form
 \begin{gather}\label{eq:general_damping_force}
-\hat{F_v}\left(\omega\right)=\hat{p}\left(\omega\right)\cdot\dfrac{iA}{B+iA},
+\hat{k_v}\left(\omega\right)=\dfrac{iA}{B+iA},
 \end{gather}
-and $B=0$ when $\omega=\omega_n$, where the maximum magnitude \num{1} is achieved. At this exact point, the magnitude of damping force component simply equals that of the external load component. The magnitude distribution of $\hat{k_v}\left(\omega\right)$ in frequency domain can be computed and illustrated in \figref{fig:constant_damping}, \figref{fig:k_proportional} and \figref{fig:m_proportional}.
+and $B=0$ when $\omega=\omega_n$, where the maximum magnitude \num{1} is achieved. At this exact point, the magnitude of damping force component simply equals that of the external load component. With that said, although damping ratio either decays to zero asymptotically (mass proportional) or grows to infinity (stiffness proportional), the corresponding damping force is bounded, the maximum of which is dependent of the magnitude of external load at the target frequency. The magnitude distribution of $\hat{k_v}\left(\omega\right)$ in frequency domain can be computed and illustrated in \figref{fig:constant_damping}, \figref{fig:k_proportional} and \figref{fig:m_proportional}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/ConstantProportional2000}
@@ -176,9 +176,8 @@ One can plot the magnitude of $\hat{m_v}\left(f\right)$ in frequency domain by c
 \includegraphics{PIC/StiffnessDampingForce200-10}
 \caption{magnitude of $\hat{m_v}\left(f\right)$ for $f_n=\SI{200}{\hertz}$ with $a_1=0.0001$}\label{fig:k_proportional_damping}
 \end{figure}
+If $p_e[n]$ and $F_v[n]$ are treated as input and output respectively, $\hat{m_v}\left(f\right)$ is then the corresponding transfer/kernel function.
 The analytical expression of $\hat{m_v}\left(f\right)$ provides a conveniently tool to query the magnitude of damping force. For example, if the upsampled sine wave in \figref{fig:extended} is used as the external load, it has a \SI{25}{\hertz} component with a magnitude of \num{1}, then the damping force shall have the same component of a magnitude $1\times\num{3.03e-2}$. The factor \num{3.03e-2} is obtained by computing the magnitude of $\hat{m_v}\left(f\right)$ at $f=\SI{25}{\hertz}$. Similarly, the \SI{225}{\hertz} component shall have a magnitude of \num{8.91e-3}.
-
-Given that numerical models inevitably contain high frequency modes due to, for example, finite element discretisation, the presence of constraints implemented via the penalty function method, under-integrated mass matrix or even lumped mass matrix with zero diagonals, the contribution of high frequency to damping force can be amplified significantly. For the case shown in \figref{fig:k_proportional_damping}, the \SI{175}{\hertz} component is sufficiently large to result in significant overshoot of damping force.
 \subsubsection{Inertial Force}
 Similarly, the inertial force can be derived as
 \begin{gather}
@@ -186,10 +185,44 @@ Similarly, the inertial force can be derived as
 \hat{m_a}\left(f\right)=\hat{g}\left(f\right)\cdot\hat{k_a}\left(f\right),
 \end{gather}
 where
-\begin{gather}
+\begin{gather}\label{eq:inertial_force}
 \hat{k_a}\left(\omega\right)=-m\omega^2\cdot\hat{h}\left(\omega\right)=\dfrac{-\beta^2}{\left(1-\beta^2\right)+i\left(2\zeta\beta\right)}.
 \end{gather}
 For stiffness/mass proportional damping, $\zeta$ takes the same expressions, viz., $a_1\omega_n$ and $a_0/\omega_n$, respectively.
+\subsubsection{Remarks}
+We derive the transfer functions $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ between the zero--stuffed input (external load) and the output (damping/inertial force) as follows.
+\begin{gather}
+\hat{m_v}\left(f\right)=\hat{g}\left(f\right)\cdot\hat{k_v}\left(f\right),\\
+\hat{m_a}\left(f\right)=\hat{g}\left(f\right)\cdot\hat{k_a}\left(f\right).
+\end{gather}
+The filter kernel $\hat{g}\left(f\right)$ can take various forms, depending on the specific type of filters chosen. For linear interpolation (triangular window), it possesses the analytical expression as shown in \eqsref{eq:tri_kernel}. The terms $\hat{k_v}\left(f\right)$ and $\hat{k_a}\left(f\right)$ also takes various forms, as shown in \eqsref{eq:damping_constant}, \eqsref{eq:damping_mass}, \eqsref{eq:damping_stiffness} and \eqsref{eq:inertial_force}, depending on the type of damping used.
+
+One can evaluate $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ over the whole frequency domain for different damping models and upsampling filters. Two example are given as follows.
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/ConstantMapTri-2000}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialMapTri-2000}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with constant damping ratio and triangular window}\label{fig:map_constant}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/StiffnessMapTri-20}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialStiffnessMapTri-20}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with stiffness proportional damping and triangular window}\label{fig:map_stiffness}
+\end{figure}
+In \figref{fig:map_constant}, the triangular window $L=10$ is chosen with a constant damping ratio $\zeta=\num{0.02}$. In \figref{fig:map_stiffness}, the triangular window $L=10$ is chosen with a stiffness proportional damping $a_1=\num{2e-4}$. In both examples, it is clearly seen that the undesired response at frequencies ranging from \SI{100}{\hertz} and \SI{1000}{\hertz} (that do not exist in the original signal, see \figref{fig:original}) is poorly attenuated. The magnitude of which is comparable to that of the original signal. Under certain circumstances (depending on the properties of the system), the numerical results of the corresponding analysis may be unreliable/unusable.
 \subsection{A Preliminary Example}
 The concept is best validated via a simple example. A single degree of freedom system is modelled with the following parameters.
 \begin{gather}
@@ -199,27 +232,17 @@ with the external load and time step size
 \begin{gather}
 p\left(t\right)=\sin\left(50\pi{}t\right),\quad\Delta{}t=\num{5e-4}.
 \end{gather}
-For comparison, the external load is provided in both forms: 1) sampled at \SI{200}{\hertz} and upsampled to \SI{2000}{\hertz} as shown in \figref{fig:interpolated}, and 2) analytically evaluated at each time point. The damping force history and its frequency components are shown in \figref{fig:sdof_force}.
+For comparison, the external load is provided in both forms: 1) sampled at \SI{200}{\hertz} and upsampled to \SI{2000}{\hertz} as shown in \figref{fig:interpolated}, and 2) analytically evaluated at each time point. The damping/inertial force history and its frequency components are shown in \figref{fig:sdof_force}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/InterpolationExample}
-\caption{damping force history of the SDOF system (transient solution included)}\label{fig:sdof_force}
+\caption{damping/inertial force history of the SDOF system (transient solution included)}\label{fig:sdof_force}
 \end{figure}
-The interpolated external load overshoots by around \SI{50}{\percent} due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}. The values agree with \figref{fig:k_proportional_damping}.
+The interpolated external load results in significant overshoots (around \SI{50}{\percent} for damping force and around \SI{500}{\percent} for inertial force) due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}, which are not attenuated by the linear interpolation. The values agree with \figref{fig:k_proportional_damping}.
 
-It is then possible to evaluate the possibility of such an overshoot over the whole frequency domain. One example is given in \figref{fig:map}.
-\begin{figure}[htb!]
-\centering
-\begin{subfigure}{.48\textwidth}
-\includegraphics{PIC/ConstantMapTri-2000}
-\caption{triangular window}
-\end{subfigure}
-\begin{subfigure}{.48\textwidth}
-\includegraphics{PIC/ConstantMapBlackmanharris-2000}
-\caption{Blackman--Harris window}
-\end{subfigure}
-\caption{normalised damping force magnitude with constant damping ratio}\label{fig:map}
-\end{figure}
+Given that numerical models inevitably contain high frequency modes due to, for example, finite element discretisation, the presence of constraints implemented via the penalty function method, under-integrated mass matrix or even lumped mass matrix with zero diagonals, the contribution of high frequency to damping/inertial force can be amplified significantly. It is also evident from analytical expressions that as long as $c$ and $m$ are not zeros, damping and inertial forces would be affected by this type of spurious response.
+
+In the case of multiple degrees of freedom (MDOF) system, depending on the distribution of natural frequencies and the components of the external load, as well as the upsampling ratio, it is possible that higher modes produce significant response due to, for example, being closer to imaging frequencies. The final numerical results may contain a considerably large portion of spurious response.
 \section{Remedies and Recommendations}
 Before discussing the remedies and recommendations, it must be emphasised that according to \eqsref{eq:general_damping_force}, as long as damping is considered, no matter which type, the maximum possible magnitude of damping force of a specific frequency equals to that of the upsampled (after filtering) input (external load in this case). Furthermore, it is also independent of the magnitude of damping, small or large. In fact, a large damping ratio gives flat $\hat{k_v}\left(f\right)$, which reduces the difference between low frequency response and high frequency response. It is thus less likely to overshoot regarding damping force (only). It can also be concluded that, as long as the damping model is not point--based (for example, the Wilson--Penzien model, which only responds to selected frequency points), the system is \textbf{not} immune from spurious damping force.
 

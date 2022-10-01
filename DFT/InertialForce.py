@@ -35,6 +35,15 @@ def surface(damping_type, a, win_type: str = 'tri'):
     plt.colorbar(surf, aspect=40, ax=plt.gca(), shrink=.75)
     plt.xlabel(r'External Load Frequency $\omega$ (Hz)')
     plt.ylabel(r'Natural Frequency $\omega_n$ (Hz)')
+    if damping_type == 'Inertial':
+        plt.text(0.85, 0.95, rf'$\zeta={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    elif damping_type == 'InertialStiffness':
+        plt.text(0.85, 0.95, rf'$a_1={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    elif damping_type == 'InertialMass':
+        plt.text(0.85, 0.95, rf'$a_0={a}$', transform=plt.gca().transAxes, ha='center', va='center')
+    else:
+        raise ValueError('Unknown Damping Type')
+
     plt.gca().set_aspect('equal')
     fig.tight_layout()
     if __SAVE__:
@@ -45,8 +54,9 @@ def surface(damping_type, a, win_type: str = 'tri'):
 
 
 if __name__ == '__main__':
-    __SAVE__ = False
-    surface('InertialStiffness', .02, 'tri')
-    surface('InertialStiffness', .02, 'hamming')
-    surface('InertialStiffness', .02, 'cheb')
-    surface('InertialStiffness', .02, 'kaiser')
+    __SAVE__ = True
+    surface('Inertial', .02, 'tri')
+    surface('InertialStiffness', .0002, 'tri')
+    # surface('Inertial', .02, 'hamming')
+    # surface('Inertial', .02, 'cheb')
+    # surface('Inertial', .02, 'kaiser')
