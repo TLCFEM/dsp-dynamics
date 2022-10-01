@@ -152,6 +152,7 @@ def perform_computation():
 
     fig.tight_layout()
     fig.savefig('../PIC/PureSineOrigin.pdf', format='pdf')
+    plt.close()
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     fig.add_subplot(211)
@@ -165,6 +166,7 @@ def perform_computation():
 
     fig.tight_layout()
     fig.savefig('../PIC/PureSineExtended.pdf', format='pdf')
+    plt.close()
     fig = plt.figure(figsize=(6, 1.5), dpi=200)
 
     fig.add_subplot(111)
@@ -178,6 +180,7 @@ def perform_computation():
 
     fig.tight_layout()
     fig.savefig('../PIC/TriangularWindow.pdf', format='pdf')
+    plt.close()
 
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
@@ -195,6 +198,7 @@ def perform_computation():
 
     fig.tight_layout()
     fig.savefig('../PIC/Convolution.pdf', format='pdf')
+    plt.close()
 
     np.savetxt('../PIC/Convolution.csv', conv_fft[conv_fft > 1e-3], delimiter=',', header='Amplitude')
     np.savetxt('../PIC/ConvolutionW.csv', conv_v[conv_v > 1e-3], delimiter=',', header='Amplitude')

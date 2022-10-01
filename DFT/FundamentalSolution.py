@@ -139,6 +139,7 @@ def perform_analysis(damping_type: str = 'Stiffness', a: float = .001):
     plt.xlim([0, max_frequency // 2])
     fig.tight_layout()
     fig.savefig(f'../PIC/{damping_type}Proportional{int(1e5 * a)}.pdf', format='pdf')
+    plt.close()
 
 
 if __name__ == '__main__':
