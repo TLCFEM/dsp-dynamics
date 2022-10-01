@@ -2,7 +2,7 @@ import matplotlib
 import numpy as np
 from matplotlib import colors, pyplot as plt
 
-from DFT.DampingForce import get_loc
+from DampingForce import get_loc
 from FundamentalSolution import compute_response, get_line_style
 from PureSine import get_window, ratio, sampling_f
 
