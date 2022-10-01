@@ -19,6 +19,7 @@ jobs:
           python PureSine.py
           python FundamentalSolution.py
           python DampingForce.py
+          python InertialForce.py
           cd ..
       - name: Compile
         uses: xu-cheng/texlive-action/full@v1
