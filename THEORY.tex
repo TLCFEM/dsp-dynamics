@@ -36,7 +36,7 @@ The bare $p_e[n]$ without applying any filters contains spectral images, that is
 \begin{gather}
 u(t)=\sin\left(2\pi{}f_0t\right),
 \end{gather}
-with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at rate $f_s=\SI{200}{\hertz}$, the discrete--time signal $p[n]$ can be depicted in \figref{fig:original}.
+with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at a rate of $f_s=\SI{200}{\hertz}$, the discrete--time signal $p[n]$ can be depicted in \figref{fig:original}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/PureSineOrigin}
@@ -99,7 +99,7 @@ where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\o
 \end{gather}
 with
 \begin{gather}
-\hat{h}\left(\omega\right)=\dfrac{1}{k}\dfrac{1}{\left(1-\beta^2\right)+i\left(2\zeta\beta\right)},\qquad\beta=\dfrac{\omega}{\omega_n}.
+\hat{h}\left(\omega\right)=\dfrac{1}{k}\dfrac{1}{\left(1-\beta^2\right)+i\left(2\zeta\eta\right)},\qquad\eta=\dfrac{\omega}{\omega_n}.
 \end{gather}
 
 The velocity/acceleration spectrum can be obtained by differentiating $\hat{u}\left(\omega\right)$,
@@ -122,13 +122,13 @@ Now consider three different types of damping.
 \paragraph{Constant Damping}
 Let $c$ (and $\zeta$) be a constant, then
 \begin{gather}\label{eq:damping_constant}
-\hat{k_v}\left(\omega\right)=\dfrac{i\left(2\zeta\beta\right)}{\left(1-\beta^2\right)+i\left(2\zeta\beta\right)}.
+\hat{k_v}\left(\omega\right)=\dfrac{i\left(2\zeta\eta\right)}{\left(1-\eta^2\right)+i\left(2\zeta\eta\right)}.
 \end{gather}
 \paragraph{Mass Proportional Damping}
 Let $c$ be proportional to mass such that $c=2a_0m$, then
 \begin{gather}
 \zeta=\dfrac{2a_0m}{2\sqrt{mk}}=\dfrac{a_0}{\omega_n},\qquad
-\zeta\beta=\dfrac{a_0\omega}{\omega_n^2},
+\zeta\eta=\dfrac{a_0\omega}{\omega_n^2},
 \end{gather}
 so that
 \begin{gather}\label{eq:damping_mass}
@@ -138,11 +138,11 @@ so that
 Let $c$ be proportional to stiffness such that $c=2a_1k$, then
 \begin{gather}
 \zeta=\dfrac{2a_1k}{2\sqrt{mk}}=a_1\omega_n,\qquad
-\zeta\beta=a_1\omega,
+\zeta\eta=a_1\omega,
 \end{gather}
 so that
 \begin{gather}\label{eq:damping_stiffness}
-\hat{k_v}\left(\omega\right)=\dfrac{i\left(2a_1\omega\right)}{\left(1-\beta^2\right)+i\left(2a_1\omega\right)}.
+\hat{k_v}\left(\omega\right)=\dfrac{i\left(2a_1\omega\right)}{\left(1-\eta^2\right)+i\left(2a_1\omega\right)}.
 \end{gather}
 
 It can be noticed that all three expressions of $\hat{k_v}\left(\omega\right)$ possess a similar form
@@ -168,7 +168,7 @@ such that
 \begin{gather}
 \hat{F_v}\left(f\right)=\hat{p_e}\left(f\right)\cdot\hat{m_v}\left(f\right),
 \end{gather}
-where $\hat{p_e}\left(f\right)$ is the spectrum of zero--stuffed external load that possesses identical magnitude at imaging frequencies, see \figref{fig:extended}.
+where $\hat{p_e}\left(f\right)$ is the spectrum of extended (zero--stuffed) external load that possesses identical magnitude at imaging frequencies, see \figref{fig:extended}.
 
 One can plot the magnitude of $\hat{m_v}\left(f\right)$ in frequency domain by choosing different natural frequency $f_n$ and damping model parameters. One example is given in \figref{fig:k_proportional_damping}.
 \begin{figure}[htb!]
@@ -186,7 +186,7 @@ Similarly, the inertial force can be derived as
 \end{gather}
 where
 \begin{gather}\label{eq:inertial_force}
-\hat{k_a}\left(\omega\right)=-m\omega^2\cdot\hat{h}\left(\omega\right)=\dfrac{-\beta^2}{\left(1-\beta^2\right)+i\left(2\zeta\beta\right)}.
+\hat{k_a}\left(\omega\right)=-m\omega^2\cdot\hat{h}\left(\omega\right)=\dfrac{-\eta^2}{\left(1-\eta^2\right)+i\left(2\zeta\eta\right)}.
 \end{gather}
 For stiffness/mass proportional damping, $\zeta$ takes the same expressions, viz., $a_1\omega_n$ and $a_0/\omega_n$, respectively.
 \subsubsection{Remarks}
@@ -244,8 +244,9 @@ Given that numerical models inevitably contain high frequency modes due to, for 
 
 In the case of multiple degrees of freedom (MDOF) system, depending on the distribution of natural frequencies and the components of the external load, as well as the upsampling ratio, it is possible that higher modes produce significant response due to, for example, being closer to imaging frequencies. The final numerical results may contain a considerably large portion of spurious response.
 \section{Remedies and Recommendations}
-As can be seen in \figref{fig:sdof_force}, using analytical expression for external load is clearly a solution that can fully suppress spurious damping force. However, this is not an option as the analytical expression of seismograph cannot be reconstructed easily.
+As can be seen in \figref{fig:sdof_force}, using analytical expression for external load is clearly a solution that can fully suppress spurious response. However, this is not an option as the analytical expression of seismograph cannot be reconstructed easily.
 \subsection{Avoid Upsampling}
 \subsection{Low--pass Filters with Better Attenuation}
 If the oscillator system is deemed as a filter system, it is evident that the fundamental cause of spurious force (output) is the high frequency noises in external load (input). A natural remedy is to suppress high frequency components as much as possible. In this regard, the linear interpolation is error prone. Other options are available.
 \subsection{Time Integration with Algorithmic Damping}
+\citet{Preumont1982} presented an analysis of time integration methods in frequency domain and derived the corresponding transfer functions.
