@@ -28,7 +28,12 @@ def compute_transfer(k, c, m, dt, gamma, beta, omega):
 
     F = np.linalg.solve(C * D - A, np.multiply(B, E))
 
-    return F[0, 0]
+    D = np.exp(-omega * dt * 1j)
+    E[1, 0] = D
+
+    G = np.linalg.solve(C * D - A, np.multiply(B, E))
+
+    return F[0, 0] + G[0, 0]
 
 
 def compute_kernel(k, zeta, omega, omega_n):
@@ -45,18 +50,17 @@ if __name__ == '__main__':
         omega = 2 * np.pi * 50
         m = 1
         k = omega ** 2
-        zeta = .05
+        zeta = .5
         c = 2 * zeta * omega * m
-        dt = 1 / 200000
-        gamma = 2
-        beta = .25 * (.5 + gamma) ** 2
-        amp[i] = 2 * compute_transfer(k, c, m, dt, gamma, beta, 2 * np.pi * f)
+        dt = 1 / 20000
+        gamma = .5
+        beta = .25 * (.5 + gamma) ** 2+.25
+        amp[i] = compute_transfer(k, c, m, dt, gamma, beta, 2 * np.pi * f)
         amp2[i] = compute_kernel(k, zeta, 2 * np.pi * f, omega)
 
-    plt.plot(freq, np.abs(amp))
-    plt.plot(freq, np.abs(amp2))
+    plt.plot(freq, np.abs(amp) / np.abs(amp2))
     plt.grid(which='both')
     plt.legend(['Newmark', 'Exact'])
     plt.xscale('log')
-    # plt.yscale('log')
+    plt.yscale('log')
     plt.show()
