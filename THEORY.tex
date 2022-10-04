@@ -1,4 +1,4 @@
-\section{Background}
+\section{The Issue Caused By Interpolation}
 In this work, a continuous--time signal/function is denoted by lowercase letters, for example, $u\left(t\right)$. It's duality in the frequency domain (via Fourier transform) is denoted with a hat symbol, for example, $\hat{u}\left(\omega\right)$ or $\hat{u}\left(f\right)$. A discrete--time signal is denoted by square brackets, for example, $u[n]$. The counterpart in the frequency domain (via the discrete Fourier transform) is denoted by the uppercase letter, for example, $U[n]$. It can alternatively be approximated by sampling $\hat{u}\left(\omega\right)$ or $\hat{u}\left(f\right)$. The conversion between angular frequency $w$ and frequency $f$ is done implicitly.
 \subsection{Typical Workflow}
 In the context of the finite element response history analysis, seismic action can be introduced into the system via either force or deformation. For the former, acceleration record is converted to inertial force with the assist of mass and then applied to target degrees of freedom. For the latter, displacement record can be directly applied to supports to shake the structure as if it sits on a shaking table.
@@ -75,7 +75,7 @@ By the convolution theorem, the upsampled signal can be obtained by either perfo
 \includegraphics{PIC/Convolution}
 \caption{interpolated sine wave in time domain and frequency domain}\label{fig:interpolated}
 \end{figure}
-\figref{fig:interpolated} shows the interpolated signal in both time domain and frequency domain. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe) of the triangular window, the spectral images in $p_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, but their magnitudes are relatively large.
+\figref{fig:interpolated} shows the interpolated signal in both time domain and frequency domain. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe) of the triangular window, the spectral images in $p_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, but their magnitudes are relatively large. The interpolated signal is used to formulate external load that is used in dynamic analysis.
 \subsection{Oscillator System}
 To investigate how the partially attenuated images would affect the response of oscillator systems, consider a single degree of freedom mass--spring--dashpot linear system under harmonic load. The equation of motion can be written as
 \begin{gather}
@@ -245,8 +245,10 @@ Given that numerical models inevitably contain high frequency modes due to, for 
 In the case of multiple degrees of freedom (MDOF) system, depending on the distribution of natural frequencies and the components of the external load, as well as the upsampling ratio, it is possible that higher modes produce significant response due to, for example, being closer to imaging frequencies. The final numerical results may contain a considerably large portion of spurious response.
 \section{Remedies and Recommendations}
 As can be seen in \figref{fig:sdof_force}, using analytical expression for external load is clearly a solution that can fully suppress spurious response. However, this is not an option as the analytical expression of seismograph cannot be reconstructed easily.
-\subsection{Avoid Upsampling}
 \subsection{Low--pass Filters with Better Attenuation}
 If the oscillator system is deemed as a filter system, it is evident that the fundamental cause of spurious force (output) is the high frequency noises in external load (input). A natural remedy is to suppress high frequency components as much as possible. In this regard, the linear interpolation is error prone. Other options are available.
-\subsection{Time Integration with Algorithmic Damping}
+\subsection{Other Recommendations}
+\subsubsection{Avoid Upsampling}
+The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
+\subsubsection{Time Integration with Algorithmic Damping}
 \citet{Preumont1982} presented an analysis of time integration methods in frequency domain and derived the corresponding transfer functions.

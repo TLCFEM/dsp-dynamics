@@ -47,14 +47,14 @@ if __name__ == '__main__':
     amp2 = np.zeros_like(freq, dtype=complex)
 
     for i, f in enumerate(freq):
-        omega = 2 * np.pi * 50
+        omega = 2 * np.pi * 80
         m = 1
         k = omega ** 2
-        zeta = .5
+        zeta = .02
         c = 2 * zeta * omega * m
-        dt = 1 / 20000
+        dt = 1 / 2000
         gamma = .5
-        beta = .25 * (.5 + gamma) ** 2+.25
+        beta = .25
         amp[i] = compute_transfer(k, c, m, dt, gamma, beta, 2 * np.pi * f)
         amp2[i] = compute_kernel(k, zeta, 2 * np.pi * f, omega)
 
