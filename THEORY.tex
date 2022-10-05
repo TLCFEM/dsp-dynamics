@@ -98,7 +98,7 @@ where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\o
 \hat{u}\left(\omega\right)=\mathscr{F}\left\{u\left(t\right)\right\}=\mathscr{F}\left\{p\left(t\right)\right\}\cdot\mathscr{F}\left\{h\left(t\right)\right\}=\hat{p}\left(\omega\right)\cdot\hat{h}\left(\omega\right),
 \end{gather}
 with
-\begin{gather}
+\begin{gather}\label{eq:analytical_transfer}
 \hat{h}\left(\omega\right)=\dfrac{1}{k}\dfrac{1}{\left(1-\beta^2\right)+i\left(2\zeta\eta\right)},\qquad\eta=\dfrac{\omega}{\omega_n}.
 \end{gather}
 
@@ -251,4 +251,23 @@ If the oscillator system is deemed as a filter system, it is evident that the fu
 \subsubsection{Avoid Upsampling}
 The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
 \subsubsection{Time Integration with Algorithmic Damping}
-\citet{Preumont1982} presented an analysis of time integration methods in frequency domain and derived the corresponding transfer functions.
+It is widely accepted by the community that the presence of algorithmic damping (with proper amount properly distributed) is beneficial.
+
+Take the popular Newmark method as the example, the integration equations can be expressed as follows using the signal notation.
+\begin{gather}
+u[n+1]=u[n]+\Delta{}tv[n]+\left(\dfrac{1}{2}-\beta\right)\Delta{}t^2a[n]+\beta\Delta{}t^2a[n+1],\\
+v[n+1]=v[n]+\left(1-\gamma\right)\Delta{}ta[n]+\gamma\Delta{}ta[n+1].
+\end{gather}
+The above equations can be used to derive the numerical transfer function that approximates the theoretical one \eqsref{eq:analytical_transfer}. \citet{Preumont1982} presented an analysis of time integration methods in frequency domain and derived the corresponding transfer functions. \citet{AriasTrujillo2012} carried out similar research and benchmarked a number of different time integration methods.
+
+One can plot the ratio between numerical and analytical transfer functions.
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/Newmark-0.8-0.5}
+\includegraphics{PIC/Newmark-1-0.5}
+\includegraphics{PIC/Newmark-1.5-0.5}
+\caption{ratio between numerical and analytical transfer functions ($\Delta{}t=\SI{0.005}{\second}$)}\label{fig:newmark_alg_damping}
+\end{figure}
+By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping.
+
+However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is greater enough to sufficiently suppress spurious response.

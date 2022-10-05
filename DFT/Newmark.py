@@ -1,39 +1,40 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+from FundamentalSolution import get_line_style
 
-def compute_transfer(k, c, m, dt, gamma, beta, omega):
-    A = np.zeros((2, 2), dtype=complex)
-    A[0, 0] = (gamma - 1) * dt * k / m
-    A[0, 1] = 1 - (1 - gamma) * dt * c / m
-    A[1, 0] = 1 - (.5 - beta) * dt * dt * k / m
-    A[1, 1] = dt - (.5 - beta) * dt * dt * c / m
+LS = get_line_style()
 
-    B = np.zeros((2, 2), dtype=complex)
-    B[0, 0] = (1 - gamma) * dt / m
-    B[0, 1] = gamma * dt / m
-    B[1, 0] = (.5 - beta) * dt * dt / m
-    B[1, 1] = beta * dt * dt / m
+__SAVE__ = True
 
-    C = np.zeros((2, 2), dtype=complex)
-    C[0, 0] = gamma * dt * k / m
-    C[0, 1] = 1 + gamma * dt * c / m
-    C[1, 0] = 1 + beta * dt * dt * k / m
-    C[1, 1] = beta * dt * dt * c / m
 
-    D = np.exp(omega * dt * 1j)
-    E = np.zeros((2, 1), dtype=complex)
-    E[0, 0] = 1
-    E[1, 0] = D
+def compute_transfer(k, c, m, h, gamma, beta, f):
+    mat_a = np.zeros((2, 2))
+    mat_a[0, 0] = (gamma - 1) * h * k / m
+    mat_a[0, 1] = 1 + (gamma - 1) * h * c / m
+    mat_a[1, 0] = 1 + (beta - .5) * h * h * k / m
+    mat_a[1, 1] = h + (beta - .5) * h * h * c / m
 
-    F = np.linalg.solve(C * D - A, np.multiply(B, E))
+    mat_b = np.zeros((2, 2))
+    mat_b[0, 0] = (1 - gamma) * h / m
+    mat_b[0, 1] = gamma * h / m
+    mat_b[1, 0] = (.5 - beta) * h * h / m
+    mat_b[1, 1] = beta * h * h / m
 
-    D = np.exp(-omega * dt * 1j)
-    E[1, 0] = D
+    mat_c = np.zeros((2, 2))
+    mat_c[0, 0] = gamma * h * k / m
+    mat_c[0, 1] = 1 + gamma * h * c / m
+    mat_c[1, 0] = 1 + beta * h * h * k / m
+    mat_c[1, 1] = beta * h * h * c / m
 
-    G = np.linalg.solve(C * D - A, np.multiply(B, E))
+    scalar_d = np.exp(f * h * 1j)
+    mat_e = np.zeros((2, 1), dtype=complex)
+    mat_e[0, 0] = 1
+    mat_e[1, 0] = scalar_d
 
-    return F[0, 0] + G[0, 0]
+    result = np.linalg.solve(mat_c * scalar_d - mat_a, np.matmul(mat_b, mat_e))
+
+    return result[0, 0]
 
 
 def compute_kernel(k, zeta, omega, omega_n):
@@ -41,26 +42,60 @@ def compute_kernel(k, zeta, omega, omega_n):
     return 1 / k / (1 - eta ** 2 + 2 * zeta * eta * 1j)
 
 
-if __name__ == '__main__':
-    freq = np.linspace(1, 1000, 1000)
-    amp = np.zeros_like(freq, dtype=complex)
-    amp2 = np.zeros_like(freq, dtype=complex)
+def compute_response(omega, freq, dt, gamma, beta):
+    m = 1
+    k = omega ** 2
+    c = 2 * .05 * omega * m
+    zeta = c / 2 / np.sqrt(k * m)
 
+    analytical = np.zeros_like(freq, dtype=complex)
+    newmark = np.zeros_like(freq, dtype=complex)
     for i, f in enumerate(freq):
-        omega = 2 * np.pi * 80
-        m = 1
-        k = omega ** 2
-        zeta = .02
-        c = 2 * zeta * omega * m
-        dt = 1 / 2000
-        gamma = .5
-        beta = .25
-        amp[i] = compute_transfer(k, c, m, dt, gamma, beta, 2 * np.pi * f)
-        amp2[i] = compute_kernel(k, zeta, 2 * np.pi * f, omega)
+        newmark[i] = compute_transfer(k, c, m, dt, gamma, beta, 2 * np.pi * f)
+        analytical[i] = compute_kernel(k, zeta, 2 * np.pi * f, omega)
 
-    plt.plot(freq, np.abs(amp) / np.abs(amp2))
-    plt.grid(which='both')
-    plt.legend(['Newmark', 'Exact'])
+    return newmark / analytical
+
+
+def generate_figure(gamma, dt=1 / 2000):
+    response = {
+        1: None,
+        2: None,
+        5: None,
+        10: None,
+        20: None,
+        50: None,
+        100: None,
+        200: None,
+        500: None
+    }
+
+    beta = .25 * (.5 + gamma) ** 2
+
+    freq = np.logspace(0, 3, 1000)
+
+    fig = plt.figure(figsize=(6, 2), dpi=200)
+    plt.title(rf'Newmark method with $\gamma={gamma}$ and $\beta={beta:.4g}$')
+
+    for f in response.keys():
+        response[f] = compute_response(f * 2 * np.pi, freq, dt, gamma, beta)
+        plt.plot(freq, np.abs(response[f]), label=f'$f_n={f}$ Hz', linestyle=next(LS))
+
+    plt.legend(handlelength=3, loc='lower left', ncol=3)
+    plt.grid(which='both', linestyle='--', linewidth=.5)
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel(r'$|\hat{h}_{NM}|/|\hat{h}|$')
     plt.xscale('log')
     plt.yscale('log')
-    plt.show()
+    fig.tight_layout()
+    if __SAVE__:
+        fig.savefig(f'../PIC/Newmark-{gamma}-{dt * 1000}.pdf', format='pdf')
+        plt.close()
+    else:
+        plt.show()
+
+
+if __name__ == '__main__':
+    generate_figure(.8, 1 / 2000)
+    generate_figure(1, 1 / 2000)
+    generate_figure(1.5, 1 / 2000)
