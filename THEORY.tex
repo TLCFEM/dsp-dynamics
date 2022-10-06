@@ -247,6 +247,10 @@ In the case of multiple degrees of freedom (MDOF) system, depending on the distr
 As can be seen in \figref{fig:sdof_force}, using analytical expression for external load is clearly a solution that can fully suppress spurious response. However, this is not an option as the analytical expression of seismograph cannot be reconstructed easily.
 \subsection{Low--pass Filters with Better Attenuation}
 If the oscillator system is deemed as a filter system, it is evident that the fundamental cause of spurious force (output) is the high frequency noises in external load (input). A natural remedy is to suppress high frequency components as much as possible. In this regard, the linear interpolation is error prone. Other options are available.
+
+Ideally, a low--pass filter that possesses high roll--off rate and low side lobe level can suppress the images caused by upsampling to the level that the corresponding spurious responses won't have a significant impact on final results, even after scaling up by a factor of $-\omega^2$.
+
+In the following, we show a number of different windows, including the Blackman--Nuttall window, the flat top window, the Kaiser family and the Chebyshev family. Those are commonly used windows with the side lobe level around \SI{-100}{\decibel}.
 \subsection{Other Recommendations}
 \subsubsection{Avoid Upsampling}
 The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
@@ -268,6 +272,8 @@ One can plot the ratio between numerical and analytical transfer functions.
 \includegraphics{PIC/Newmark-1.5-0.5}
 \caption{ratio between numerical and analytical transfer functions ($\Delta{}t=\SI{0.005}{\second}$)}\label{fig:newmark_alg_damping}
 \end{figure}
-By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping.
+By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response.
 
-However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is greater enough to sufficiently suppress spurious response.
+Also, noting that since the original signal is upsampled, the upsampling factor $L$ shall be taken into consideration. Given that $Lf_s\Delta{}t=1$, instead of $\Delta{}t/T_n$ where $T_n$ is the natural period of interest, one shall use $\Delta{}t/T_n/L$ to distinguish between `low' and `high' frequency regions as images reside between $f_s/2$ (original Nyquist frequency) and $Lf_s/2]$ (upsampled Nyquist frequency).
+
+The Newmark method only possesses a first order accuracy when $\gamma>0.5$, other methods are more favourable. Among them, the GSSSS framework \citep{Zhou2003,Zhou2006} and the Bathe two--step method, representing two major categories, are recommended. They possess second order accuracy and provide controllable algorithmic damping.

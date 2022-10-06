@@ -1,4 +1,27 @@
 \section{Conclusions}
+
+\begin{figure}[htb!]
+\centering
+\tikzstyle{label}=[rectangle,rounded corners,minimum width=3cm,minimum height=1cm,text centered,draw=black,fill=gray!20]
+\begin{tikzpicture}
+\node(original)[label]{Original Load Record};
+\node(extended)[label,below of=original,yshift=-1cm]{Extend (Zero--stuffed)};
+\node(filter)[label,below of=extended,yshift=-1cm]{Low--pass Filter};
+\node(oscillator)[label,below of=filter,yshift=-1cm]{Dynamic System};
+\node(system)[label,below of=oscillator,yshift=-1cm]{Numerical Result};
+\draw[->](original)--(extended);
+\draw[->](extended)--(filter);
+\draw[->](filter)--(oscillator);
+\draw[->](oscillator)--(system);
+\node[xshift=6cm,right of=original,align=center]{either force or displacement\\either processed or unprocessed};
+\node[xshift=6cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
+\node[xshift=6cm,right of=filter,align=center]{design a FIR filter\\using a proper window\\with desired attributes};
+\node[xshift=6cm,right of=oscillator,align=center]{use a proper time integration\\method with proper algorithmic\\damping};
+\node[xshift=6cm,right of=system,align=center]{examine frequency components\\via DFT};
+\end{tikzpicture}
+\caption{typical analysis flow with recommendations}
+\end{figure}
+
 It is evident that the linear interpolation is not ideal.
 \begin{enumerate}
 \item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, one shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval. Then, the seismogram shall be upsampled.
