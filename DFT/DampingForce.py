@@ -225,6 +225,7 @@ def plot_window(win_type: str = 'tri'):
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Amplitude (dB)')
     plt.plot(window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)))
+    plt.legend([f'{__normalised_name[win_type]} window'], loc='upper right')
     plt.grid(True)
     plt.xlim([-1000, 1000])
 
@@ -244,6 +245,7 @@ def plot_window(win_type: str = 'tri'):
 
     convolved = np.convolve(up_sine_wave, window, mode='same')
     plt.plot(up_time, convolved)
+    plt.legend(['filtered signal', 'original signal'], loc='upper right')
 
     fig.tight_layout()
     if __SAVE__:

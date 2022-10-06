@@ -1,8 +1,9 @@
 \section{Conclusions}
 
 \begin{figure}[htb!]
-\centering
+\centering\footnotesize
 \tikzstyle{label}=[rectangle,rounded corners,minimum width=3cm,minimum height=1cm,text centered,draw=black,fill=gray!20]
+\tikzstyle{exp}=[rectangle,rounded corners,minimum width=2cm,minimum height=1cm,text centered,draw=black,fill=gray!10]
 \begin{tikzpicture}
 \node(original)[label]{Original Load Record};
 \node(extended)[label,below of=original,yshift=-1cm]{Extend (Zero--stuffed)};
@@ -13,11 +14,20 @@
 \draw[->](extended)--(filter);
 \draw[->](filter)--(oscillator);
 \draw[->](oscillator)--(system);
-\node[xshift=6cm,right of=original,align=center]{either force or displacement\\either processed or unprocessed};
-\node[xshift=6cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
-\node[xshift=6cm,right of=filter,align=center]{design a FIR filter\\using a proper window\\with desired attributes};
-\node[xshift=6cm,right of=oscillator,align=center]{use a proper time integration\\method with proper algorithmic\\damping};
-\node[xshift=6cm,right of=system,align=center]{examine frequency components\\via DFT};
+\node[xshift=5cm,right of=original,align=center]{either force or displacement\\either processed or unprocessed};
+\node[xshift=5cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
+\node[xshift=5cm,right of=filter,align=center]{design a FIR filter\\using a proper window\\with desired attributes};
+\node[xshift=5cm,right of=oscillator,align=center]{use a proper time integration\\method with proper algorithmic\\damping};
+\node[xshift=5cm,right of=system,align=center]{examine frequency components\\via DFT};
+\node(p)[exp,xshift=-5cm,right of=original,align=center]{$\hat{p}$};
+\node(pe)[exp,xshift=-5cm,right of=extended,align=center]{$\hat{p_e}$};
+\node(g)[exp,xshift=-5cm,right of=filter,align=center]{$\hat{g}$};
+\node(h)[exp,xshift=-5cm,right of=oscillator,align=center]{$\hat{h}$};
+\node(f)[exp,xshift=-5cm,right of=system,align=center]{$\hat{F_u}$, $\hat{F_v}$, $\hat{F_a}$};
+\draw[->](p)--(pe)node[midway,right]{$[\uparrow{}L]$};
+\draw[->](pe)--(g)node[midway,right]{$\times\hat{g}$};
+\draw[->](g)--(h)node[midway,right]{$\times\hat{h}$};
+\draw[->](h)--(f)node[midway,right]{$\times\{1,i\omega,-\omega^2\}$};
 \end{tikzpicture}
 \caption{typical analysis flow with recommendations}
 \end{figure}
