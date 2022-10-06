@@ -36,6 +36,17 @@ LS = get_line_style()
 
 __SAVE__ = True
 
+__normalised_name = {
+    'tri': 'triangular',
+    'flattop': 'flat top',
+    'blackmanharris': 'Blackman-Harris',
+    'nuttall': 'Blackman-Nuttall',
+    'hann': 'Hann',
+    'hamming': 'Hamming',
+    'kaiser': r'Kaiser ($\beta=9$)',
+    'cheb': r'Dolph-Chebyshev ($-80$ dB)'
+}
+
 
 def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
     _, freq, window_amp = get_window(ratio * sampling_f // 2, True, win_type)
@@ -46,7 +57,8 @@ def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
     total_amp = np.abs(amp * window_amp)
 
     fig = plt.figure(figsize=(6, 2), dpi=200)
-    plt.title(rf'{damping_type.lower()} proportional damping with {win_type} window, $a_1={a}$, $f_n={freq_n}$ Hz')
+    plt.title(
+        rf'{damping_type.lower()} proportional damping with {__normalised_name[win_type]} window, $a_1={a}$, $f_n={freq_n}$ Hz')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(r'Magnitude $|\hat{m_v}|$')
     plt.plot(freq, np.maximum(1e-12, total_amp))
@@ -80,13 +92,13 @@ def surface(damping_type, a, win_type: str = 'tri'):
         array[:, i] = np.abs(amp * window_amp)
 
     array /= np.max(array)
-    array_min = max(1e-14, np.min(array))
+    array_min = max(1e-12, np.min(array))
     array_max = np.max(array)
     array_norm = colors.LogNorm(vmin=array_min, vmax=array_max)
-    fig = plt.figure(figsize=(3, 2.8), dpi=400)
-    surf = plt.pcolormesh(x, y, np.maximum(1e-14, array).T, norm=array_norm, cmap='RdYlBu', rasterized=True)
-    plt.colorbar(surf, aspect=40, ax=plt.gca(), shrink=.75)
-    plt.xlabel(r'External Load Frequency $\omega$ (Hz)')
+    fig = plt.figure(figsize=(3, 2.4), dpi=400)
+    surf = plt.pcolormesh(x, y, np.maximum(1e-12, array).T, norm=array_norm, cmap='RdYlBu', rasterized=True)
+    plt.colorbar(surf, aspect=40, ax=plt.gca(), shrink=.9)
+    plt.xlabel(r'External Load Frequency $f$ (Hz)')
     if damping_type == 'Constant':
         plt.text(0.85, 0.95, rf'$\zeta={a}$', transform=plt.gca().transAxes, ha='center', va='center')
     elif damping_type == 'Stiffness':
@@ -95,7 +107,7 @@ def surface(damping_type, a, win_type: str = 'tri'):
         plt.text(0.85, 0.95, rf'$a_0={a}$', transform=plt.gca().transAxes, ha='center', va='center')
     else:
         raise ValueError('Unknown Damping Type')
-    plt.ylabel(r'Natural Frequency $\omega_n$ (Hz)')
+    plt.ylabel(r'Natural Frequency $f_n$ (Hz)')
     plt.gca().set_aspect('equal')
     fig.tight_layout()
     if __SAVE__:
@@ -210,7 +222,6 @@ def plot_window(win_type: str = 'tri'):
     window_amp = np.abs(window_amp)
     fig = plt.figure(figsize=(6, 3), dpi=200)
     fig.add_subplot(211)
-    plt.title(f'{win_type} window function')
     plt.xlabel('Frequency (Hz)')
     plt.ylabel('Amplitude (dB)')
     plt.plot(window_freq, 20 * np.log10(np.maximum(window_amp, 1e-12)))
@@ -223,7 +234,7 @@ def plot_window(win_type: str = 'tri'):
     o_time, o_sine_wave = get_waveform(int(duration * sampling_f))
     up_time, up_sine_wave = zero_stuff(o_time, o_sine_wave, ratio)
 
-    markerline, stemline, baseline = plt.stem(up_time, up_sine_wave, markerfmt='ro', linefmt='--')
+    markerline, stemline, baseline = plt.stem(o_time, o_sine_wave, markerfmt='ro', linefmt='--')
     plt.setp(stemline, linewidth=0)
     plt.setp(markerline, markersize=2)
     plt.setp(stemline, color='#377eb8')
@@ -231,10 +242,25 @@ def plot_window(win_type: str = 'tri'):
     plt.setp(baseline, linewidth=.1)
     plt.grid(True)
 
-    plt.plot(up_time, np.convolve(up_sine_wave, window, mode='same'))
+    convolved = np.convolve(up_sine_wave, window, mode='same')
+    plt.plot(up_time, convolved)
 
     fig.tight_layout()
-    fig.show()
+    if __SAVE__:
+        fig.savefig(f'../PIC/Window-{win_type.capitalize()}.pdf', format='pdf')
+        plt.close()
+    else:
+        plt.title(rf'{__normalised_name[win_type]} window function')
+        plt.show()
+
+    o_time = np.linspace(0, 2, 2 * sampling_f, endpoint=False)
+    o_sine_wave = np.sin(2 * np.pi * natural_f * o_time)
+    up_time = np.linspace(0, 2, ratio * len(o_time), endpoint=False)
+    up_sine_wave = np.zeros(len(up_time))
+    up_sine_wave[::ratio] = o_sine_wave
+    convolved = np.convolve(up_sine_wave, window, mode='same')
+
+    np.savetxt(f'../MODEL/PureSine/motion-{win_type}', np.vstack((up_time, convolved)).T, fmt='%.15e')
 
 
 if __name__ == '__main__':
@@ -249,7 +275,10 @@ if __name__ == '__main__':
 
     process_result(xxx, yyy)
 
+    plot_window('flattop')
+    plot_window('nuttall')
     plot_window('kaiser')
+    plot_window('cheb')
 
     surface('Constant', .02, 'tri')
     surface('Constant', .02, 'blackmanharris')
@@ -257,11 +286,14 @@ if __name__ == '__main__':
     surface('Constant', .02, 'hamming')
     surface('Constant', .02, 'cheb')
     surface('Constant', .02, 'kaiser')
+    surface('Constant', .02, 'nuttall')
     surface('Stiffness', .0002, 'tri')
     surface('Stiffness', .0002, 'hamming')
     surface('Stiffness', .0002, 'cheb')
     surface('Stiffness', .0002, 'kaiser')
+    surface('Stiffness', .0002, 'nuttall')
     surface('Mass', 2, 'tri')
     surface('Mass', 2, 'hamming')
     surface('Mass', 2, 'cheb')
     surface('Mass', 2, 'kaiser')
+    surface('Mass', 2, 'nuttall')

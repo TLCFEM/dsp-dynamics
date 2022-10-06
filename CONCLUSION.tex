@@ -26,9 +26,7 @@ It is evident that the linear interpolation is not ideal.
 \begin{enumerate}
 \item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, one shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval. Then, the seismogram shall be upsampled.
 \item The low--pass filter shall possess sufficiently small side lobe level.
-\item Whether the time integration method possesses algorithmic damping does not affect the type of spurious damping force discussed in this work. The high frequency noise exists intrinsically and is spotted analytically. Algorithmic damping does not alleviate the issue in this regard.
-\item The Rayleigh damping model undoubtedly introduces high damping forces in high frequencies. However, with sufficiently small, if not in absence of, high frequency components, the Rayleigh damping model can still be used. The spurious damping force can be suppressed.
-\item It is still preferred to use an alternative damping model that does not produce unbounded damping action in regions out of interests.
+\item The high frequency noise exists intrinsically and is spotted analytically. Algorithmic damping can alleviate the issue but only to a limited degree.
 \end{enumerate}
 
 \begin{enumerate}
@@ -38,4 +36,4 @@ It is evident that the linear interpolation is not ideal.
 \item Avoid high frequency modes in the target structure. For example, use a properly integrated consistent mass matrix or full ranked diagonal mass matrix, limit the penalty factor within a reasonable range when it comes to model, for example, axial inextensibility. Constraints are better implemented via the Lagrange multiplier method.
 \end{enumerate}
 
-The numerical examples are carried out using \texttt{suanPan} \citep{Chang2022}. Scripts to generate figures and models can be found online.
+The numerical examples are carried out using \texttt{suanPan} \citep{Chang2022}. Scripts to generate figures and models can be found online.\footnote{\url{https://github.com/TLCFEM/dsp-dynamics}}

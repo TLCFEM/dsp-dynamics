@@ -223,7 +223,7 @@ One can evaluate $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ over th
 \caption{normalised damping/inertial force magnitude with stiffness proportional damping and triangular window}\label{fig:map_stiffness}
 \end{figure}
 In \figref{fig:map_constant}, the triangular window $L=10$ is chosen with a constant damping ratio $\zeta=\num{0.02}$. In \figref{fig:map_stiffness}, the triangular window $L=10$ is chosen with a stiffness proportional damping $a_1=\num{2e-4}$. In both examples, it is clearly seen that the undesired response at frequencies ranging from \SI{100}{\hertz} and \SI{1000}{\hertz} (that do not exist in the original signal, see \figref{fig:original}) is poorly attenuated. The magnitude of which is comparable to that of the original signal. Under certain circumstances (depending on the properties of the system), the numerical results of the corresponding analysis may be unreliable/unusable.
-\subsection{A Preliminary Example}
+\subsection{A Preliminary Example}\label{sec:sdof_example}
 The concept is best validated via a simple example. A single degree of freedom system is modelled with the following parameters.
 \begin{gather}
 f_n=200,\quad{}m=1,\quad{}k=4\pi^2f_n^2=\num{1.579e6},\quad{}a_1=\num{e-4},\quad{}c=2a_1k=\num{315.827},
@@ -236,7 +236,7 @@ For comparison, the external load is provided in both forms: 1) sampled at \SI{2
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/InterpolationExample}
-\caption{damping/inertial force history of the SDOF system (transient solution included)}\label{fig:sdof_force}
+\caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using triangular widow and Newmark method with $\gamma=0.5$ and $\beta=0.25$}\label{fig:sdof_force}
 \end{figure}
 The interpolated external load results in significant overshoots (around \SI{50}{\percent} for damping force and around \SI{500}{\percent} for inertial force) due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}, which are not attenuated by the linear interpolation. The values agree with \figref{fig:k_proportional_damping}.
 
@@ -250,7 +250,101 @@ If the oscillator system is deemed as a filter system, it is evident that the fu
 
 Ideally, a low--pass filter that possesses high roll--off rate and low side lobe level can suppress the images caused by upsampling to the level that the corresponding spurious responses won't have a significant impact on final results, even after scaling up by a factor of $-\omega^2$.
 
-In the following, we show a number of different windows, including the Blackman--Nuttall window, the flat top window, the Kaiser family and the Chebyshev family. Those are commonly used windows with the side lobe level around \SI{-100}{\decibel}.
+In the following, we show a number of different windows in \figref{fig:nuttall_window}, \figref{fig:flattop_window}, \figref{fig:kaiser_window} and \figref{fig:cheb_window}, including the Blackman--Nuttall window, the flat top window, the Kaiser family and the Chebyshev family. Those are commonly used windows. The number of bins is chosen to be $32L+1$ ($L=10$ in this work) to obtain a side lobe level around \SI{-100}{\decibel}.
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/Window-Nuttall}
+\caption{Blackman--Nuttall window and the filtered signal}\label{fig:nuttall_window}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/Window-Flattop}
+\caption{Flat top window and the filtered signal}\label{fig:flattop_window}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/Window-Kaiser}
+\caption{Kaiser window ($\beta=9$) and the filtered signal}\label{fig:kaiser_window}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/Window-Cheb}
+\caption{Dolph--Chebyshev ($\SI{-80}{\decibel}$) window and the filtered signal}\label{fig:cheb_window}
+\end{figure}
+
+With those windows, one can repeat the procedure to obtain the distributions of $\hat{m_v}$ and $\hat{m_a}$ that reveal the relative magnitudes of damping and inertial forces. \figref{fig:map_constant_kaiser}, \figref{fig:map_stiffness_kaiser}, \figref{fig:map_mass_kaiser}, \figref{fig:map_constant_nuttall}, \figref{fig:map_stiffness_nuttall} and \figref{fig:map_mass_nuttall} show the examples with three different types of damping models for Kaiser and Blackman--Nuttall windows, respectively. It is evident that imaging frequencies can be greatly attenuated, even on the resonance line ($f=f_n$).
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/ConstantMapKaiser-2000}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialMapKaiser-2000}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with constant damping ratio and Kaiser window}\label{fig:map_constant_kaiser}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/StiffnessMapKaiser-20}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialStiffnessMapKaiser-20}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with stiffness proportional damping and Kaiser window}\label{fig:map_stiffness_kaiser}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/MassMapKaiser-200000}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialMassMapKaiser-200000}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with mass proportional damping and Kaiser window}\label{fig:map_mass_kaiser}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/ConstantMapNuttall-2000}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialMapNuttall-2000}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with constant damping ratio and Blackman--Nuttall window}\label{fig:map_constant_nuttall}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/StiffnessMapNuttall-20}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialStiffnessMapNuttall-20}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with stiffness proportional damping and Blackman--Nuttall window}\label{fig:map_stiffness_nuttall}
+\end{figure}
+\begin{figure}[htb!]
+\centering
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/MassMapNuttall-200000}
+\caption{damping case $\hat{m_v}\left(f\right)$}
+\end{subfigure}
+\begin{subfigure}{.48\textwidth}
+\includegraphics{PIC/InertialMassMapNuttall-200000}
+\caption{inertial case $\hat{m_a}\left(f\right)$}
+\end{subfigure}
+\caption{normalised damping/inertial force magnitude with mass proportional damping and Blackman--Nuttall window}\label{fig:map_mass_nuttall}
+\end{figure}
 \subsection{Other Recommendations}
 \subsubsection{Avoid Upsampling}
 The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
@@ -272,8 +366,15 @@ One can plot the ratio between numerical and analytical transfer functions.
 \includegraphics{PIC/Newmark-1.5-0.5}
 \caption{ratio between numerical and analytical transfer functions ($\Delta{}t=\SI{0.005}{\second}$)}\label{fig:newmark_alg_damping}
 \end{figure}
-By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response.
+By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response. One must be aware of the fact that the integration error increases as $\omega\Delta{}t$ increases. Thus, results closer to upsampled Nyquist frequency $Lf_s/2$ contain significantly error that may suppress high frequency response in some cases, or amplify it in others. Time integration methods with better accuracy is always preferred.
 
 Also, noting that since the original signal is upsampled, the upsampling factor $L$ shall be taken into consideration. Given that $Lf_s\Delta{}t=1$, instead of $\Delta{}t/T_n$ where $T_n$ is the natural period of interest, one shall use $\Delta{}t/T_n/L$ to distinguish between `low' and `high' frequency regions as images reside between $f_s/2$ (original Nyquist frequency) and $Lf_s/2]$ (upsampled Nyquist frequency).
 
 The Newmark method only possesses a first order accuracy when $\gamma>0.5$, other methods are more favourable. Among them, the GSSSS framework \citep{Zhou2003,Zhou2006} and the Bathe two--step method, representing two major categories, are recommended. They possess second order accuracy and provide controllable algorithmic damping.
+\subsubsection{Improved Example}
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/Nuttall.Example}
+\caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using Blackman--Nuttall window and the generalised $\alpha$ time integration method with $\rho_\infty=0.5$}\label{fig:nuttall_example}
+\end{figure}
+\figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised $\alpha$ time integration method.

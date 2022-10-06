@@ -69,6 +69,8 @@ def get_window(length: int = 512, half: bool = False, window_type: str = 'tri'):
             window = signal.windows.flattop(bin_num + 1)
         elif window_type == 'blackmanharris':
             window = signal.windows.blackmanharris(bin_num + 1)
+        elif window_type == 'nuttall':
+            window = signal.windows.nuttall(bin_num + 1)
         elif window_type == 'hann':
             window = signal.windows.hann(bin_num + 1)
         elif window_type == 'hamming':

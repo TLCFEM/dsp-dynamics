@@ -21,6 +21,7 @@ jobs:
           python DampingForce.py
           python InertialForce.py
           python Newmark.py
+          python Nuttall.py
           cd ..
       - name: Compile
         uses: xu-cheng/texlive-action/full@v1
