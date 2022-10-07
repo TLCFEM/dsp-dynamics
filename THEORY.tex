@@ -36,7 +36,7 @@ The bare $p_e[n]$ without applying any filters contains spectral images, that is
 \begin{gather}
 u(t)=\sin\left(2\pi{}f_0t\right),
 \end{gather}
-with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}. Assume this continuous--time signal is sampled at a rate of $f_s=\SI{200}{\hertz}$, the discrete--time signal $p[n]$ can be depicted in \figref{fig:original}.
+with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}, a typical upper bound of seismograph. Assume this continuous--time signal is sampled at a rate of $f_s=\SI{200}{\hertz}$, the discrete--time signal $p[n]$ can be depicted in \figref{fig:original}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/PureSineOrigin}
@@ -99,7 +99,7 @@ where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\o
 \end{gather}
 with
 \begin{gather}\label{eq:analytical_transfer}
-\hat{h}\left(\omega\right)=\dfrac{1}{k}\dfrac{1}{\left(1-\beta^2\right)+i\left(2\zeta\eta\right)},\qquad\eta=\dfrac{\omega}{\omega_n}.
+\hat{h}\left(\omega\right)=\dfrac{1}{k}\dfrac{1}{\left(1-\eta^2\right)+i\left(2\zeta\eta\right)},\qquad\eta=\dfrac{\omega}{\omega_n}.
 \end{gather}
 
 The velocity/acceleration spectrum can be obtained by differentiating $\hat{u}\left(\omega\right)$,
@@ -222,7 +222,7 @@ One can evaluate $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ over th
 \end{subfigure}
 \caption{normalised damping/inertial force magnitude with stiffness proportional damping and triangular window}\label{fig:map_stiffness}
 \end{figure}
-In \figref{fig:map_constant}, the triangular window $L=10$ is chosen with a constant damping ratio $\zeta=\num{0.02}$. In \figref{fig:map_stiffness}, the triangular window $L=10$ is chosen with a stiffness proportional damping $a_1=\num{2e-4}$. In both examples, it is clearly seen that the undesired response at frequencies ranging from \SI{100}{\hertz} and \SI{1000}{\hertz} (that do not exist in the original signal, see \figref{fig:original}) is poorly attenuated. The magnitude of which is comparable to that of the original signal. Under certain circumstances (depending on the properties of the system), the numerical results of the corresponding analysis may be unreliable/unusable.
+In \figref{fig:map_constant}, the triangular window $L=10$ is chosen with a constant damping ratio $\zeta=\num{0.02}$. In \figref{fig:map_stiffness}, the triangular window $L=10$ is chosen with a stiffness proportional damping $a_1=\num{2e-4}$. In both examples, it is clearly seen that the undesired response at frequencies ranging from \SI{100}{\hertz} and \SI{1000}{\hertz} (that do not exist in the original signal, see \figref{fig:original}) is poorly attenuated. The magnitude of which is comparable to that of the original signal. Under certain circumstances (depending on the properties of the target system), numerical results of the corresponding analysis may be unreliable/unusable.
 \subsection{A Preliminary Example}\label{sec:sdof_example}
 The concept is best validated via a simple example. A single degree of freedom system is modelled with the following parameters.
 \begin{gather}
@@ -366,15 +366,15 @@ One can plot the ratio between numerical and analytical transfer functions.
 \includegraphics{PIC/Newmark-1.5-0.5}
 \caption{ratio between numerical and analytical transfer functions ($\Delta{}t=\SI{0.005}{\second}$)}\label{fig:newmark_alg_damping}
 \end{figure}
-By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response. One must be aware of the fact that the integration error increases as $\omega\Delta{}t$ increases. Thus, results closer to upsampled Nyquist frequency $Lf_s/2$ contain significantly error that may suppress high frequency response in some cases, or amplify it in others. Time integration methods with better accuracy is always preferred.
+By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, high frequency responses can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response. One must be aware of the fact that the integration error increases as $f\Delta{}t$ increases. Thus, results closer to upsampled Nyquist frequency $Lf_s/2$ contain significantly error that may suppress high frequency response in some cases, or amplify it in others. Time integration methods with better accuracy is always preferred.
 
-Also, noting that since the original signal is upsampled, the upsampling factor $L$ shall be taken into consideration. Given that $Lf_s\Delta{}t=1$, instead of $\Delta{}t/T_n$ where $T_n$ is the natural period of interest, one shall use $\Delta{}t/T_n/L$ to distinguish between `low' and `high' frequency regions as images reside between $f_s/2$ (original Nyquist frequency) and $Lf_s/2]$ (upsampled Nyquist frequency).
+Also, noting that since the original signal is upsampled, the upsampling factor $L$ shall be taken into consideration. Given that $Lf_s\Delta{}t=1$, instead of $\Delta{}t/T_n$ where $T_n$ is the natural period of interest, one shall use $\Delta{}t/T_n/L$ to distinguish between `low' and `high' frequency regions as images reside between $f_s/2$ (original Nyquist frequency) and $Lf_s/2$ (upsampled Nyquist frequency).
 
 The Newmark method only possesses a first order accuracy when $\gamma>0.5$, other methods are more favourable. Among them, the GSSSS framework \citep{Zhou2003,Zhou2006} and the Bathe two--step method, representing two major categories, are recommended. They possess second order accuracy and provide controllable algorithmic damping.
 \subsubsection{Improved Example}
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/Nuttall.Example}
-\caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using Blackman--Nuttall window and the generalised $\alpha$ time integration method with $\rho_\infty=0.5$}\label{fig:nuttall_example}
+\caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using Blackman--Nuttall window and the generalised-$\alpha$ time integration method with $\rho_\infty=0.5$}\label{fig:nuttall_example}
 \end{figure}
-\figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised $\alpha$ time integration method.
+\figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised-$\alpha$ time integration method.
