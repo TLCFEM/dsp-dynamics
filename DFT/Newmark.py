@@ -77,9 +77,16 @@ def generate_figure(gamma, dt=1 / 2000):
     fig = plt.figure(figsize=(6, 2), dpi=200)
     plt.title(rf'Newmark method with $\gamma={gamma}$ and $\beta={beta:.4g}$')
 
+    min_y = 1
+    max_y = 1
     for f in response.keys():
-        response[f] = compute_response(f * 2 * np.pi, freq, dt, gamma, beta)
-        plt.plot(freq, np.abs(response[f]), label=f'$f_n={f}$ Hz', linestyle=next(LS))
+        response[f] = np.abs(compute_response(f * 2 * np.pi, freq, dt, gamma, beta))
+        min_y = min(min_y, np.min(response[f]))
+        max_y = max(max_y, np.max(response[f]))
+        plt.plot(freq, response[f], label=f'$f_n={f}$ Hz', linestyle=next(LS))
+
+    min_y = 10 ** (np.log10(min_y) - .1)
+    max_y = 10 ** (np.log10(max_y) + .1)
 
     plt.legend(handlelength=3, loc='lower left', ncol=3)
     plt.grid(which='both', linestyle='--', linewidth=.5)
@@ -87,6 +94,7 @@ def generate_figure(gamma, dt=1 / 2000):
     plt.ylabel(r'$|\hat{h}_{NM}|/|\hat{h}|$')
     plt.xscale('log')
     plt.yscale('log')
+    plt.ylim(max(min_y, 1e-3), min(max_y, 1e1))
     fig.tight_layout()
     if __SAVE__:
         fig.savefig(f'../PIC/Newmark-{gamma}-{dt * 1000}.pdf', format='pdf')
@@ -99,3 +107,6 @@ if __name__ == '__main__':
     generate_figure(.8, 1 / 2000)
     generate_figure(1, 1 / 2000)
     generate_figure(1.5, 1 / 2000)
+    generate_figure(2, 1 / 2000)
+    __SAVE__ = False
+    generate_figure(.5, 1 / 2000)
