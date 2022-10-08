@@ -1,0 +1,9 @@
+element Mass 16 2 2.0833e-04 1 2
+element Mass 17 6 4.1667e-04 1 2
+element Mass 18 10 2.0833e-04 1 2
+element Mass 19 3 2.0833e-04 1 2
+element Mass 20 7 4.1667e-04 1 2
+element Mass 21 11 2.0833e-04 1 2
+element Mass 22 4 2.0833e-04 1 2
+element Mass 23 8 4.1667e-04 1 2
+element Mass 24 12 2.0833e-04 1 2
