@@ -7,9 +7,7 @@ __SAVE__ = False
 
 
 def upsample():
-    fig = plt.figure(figsize=(10, 6), dpi=200)
     motion = np.loadtxt('../MODEL/FRAME/motion_time')
-    plt.plot(motion[:, 0], motion[:, 1], linewidth=2)
 
     ratio = 4
     bin_num = 32 * ratio
@@ -23,50 +21,31 @@ def upsample():
     up_motion = np.zeros(ratio * len(motion[:, 1]))
     up_motion[::ratio] = motion[:, 1]
     up_motion = np.convolve(up_motion, window, mode='same')
-    plt.plot(up_time, up_motion, '--', linewidth=.5)
-    plt.xlim([20, 60])
-
-    fig.tight_layout()
-    plt.show()
-    print(up_time)
-    print(up_motion)
 
     two_column = np.vstack((up_time, up_motion)).T
     np.savetxt('../MODEL/FRAME/up_motion_time', two_column)
 
 
 def process_result(node):
-    fig = plt.figure(figsize=(6, 6), dpi=200)
-    fig.add_subplot(211)
+    fig = plt.figure(figsize=(10, 6), dpi=200)
     plt.title(f'damping force history of node {node}')
     plt.xlabel('Time (s)')
     plt.ylabel(r'Damping Force $F_v$')
-    with h5py.File('../MODEL/FRAME/R2-IF.h5', 'r') as f:
-        data = f['R2-IF'][f'R2-IF{node}']
-        plt.plot(data[:, 0], data[:, 2], linewidth=1)
-        plt.xlim([20, np.max(data[:, 0])])
+    plt.xlim([20, 60])
 
-    plt.grid(True, which='both')
+    name = 'R3-GDF'
 
-    fig.add_subplot(212)
-    plt.title(f'frequency response of damping force of node {node}')
-    plt.xlabel('Frequency (Hz)')
-    plt.ylabel(r'Magnitude of Damping Force $F_d$')
+    with h5py.File(f'../MODEL/FRAME/{name}.h5', 'r') as f:
+        data = f[name][f'{name}{node}']
+        time = data[:, 0]
+        force = data[:, 1]
 
-    with h5py.File('../MODEL/FRAME/R2-IF.h5', 'r') as f:
-        data = f['R2-IF'][f'R2-IF{node}']
-        o_amplitude = 2 * np.fft.rfft(data[:, 2]) / len(data[:, 2])
-        o_freq = np.fft.rfftfreq(2 * len(o_amplitude) - 2, data[1, 0] - data[0, 0])
-        abs_mag = np.abs(o_amplitude)
-        abs_mag /= np.max(abs_mag)
-        plt.plot(o_freq, abs_mag)
+    with h5py.File(f'../MODEL/FRAME/up-{name}.h5', 'r') as f:
+        data = f[name][f'{name}{node}']
+        force_up = data[:, 1]
 
-        plt.xlim([0, np.max(o_freq)])
-        plt.ylim([np.min(abs_mag), 1])
-
-    plt.minorticks_on()
-    plt.grid(True, which='both')
-    plt.yscale('log')
+    plt.plot(time, np.abs(force - force_up) / np.max(np.abs(force_up)) * 100, label='original')
+    plt.legend()
 
     fig.tight_layout()
 
@@ -78,6 +57,5 @@ def process_result(node):
 
 
 if __name__ == '__main__':
-    for i in {2, 6}:
-        process_result(i)
+    process_result(2)
     # upsample()
