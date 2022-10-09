@@ -1,9 +1,2 @@
 section NM2D1 1 5.8000e+02 4.2920e+04 0.
 element NMB21 1 2 6 1
-element NMB21 2 6 10 1
-section NM2D1 2 5.8000e+02 4.2920e+04 0.
-element NMB21 3 3 7 2
-element NMB21 4 7 11 2
-section NM2D1 3 5.8000e+02 4.2920e+04 0.
-element NMB21 5 4 8 3
-element NMB21 6 8 12 3

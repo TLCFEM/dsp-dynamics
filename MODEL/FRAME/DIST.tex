@@ -1,37 +1,13 @@
 \begin{tikzpicture}[scale=2]
 \coordinate(N1)at(0.0,0.0);
 \coordinate(N2)at(0.0,1.2);
-\coordinate(N3)at(0.0,2.4);
-\coordinate(N4)at(0.0,3.6);
 \coordinate(N5)at(2.4,0.0);
 \coordinate(N6)at(2.4,1.2);
-\coordinate(N7)at(2.4,2.4);
-\coordinate(N8)at(2.4,3.6);
-\coordinate(N9)at(4.8,0.0);
-\coordinate(N10)at(4.8,1.2);
-\coordinate(N11)at(4.8,2.4);
-\coordinate(N12)at(4.8,3.6);
 \draw[line width=1mm](N2)--(N6)node[midway,fill=white,font=\tiny]{W21X68};
-\draw[line width=1mm](N6)--(N10)node[midway,fill=white,font=\tiny]{W21X68};
-\draw[line width=1mm](N3)--(N7)node[midway,fill=white,font=\tiny]{W21X68};
-\draw[line width=1mm](N7)--(N11)node[midway,fill=white,font=\tiny]{W21X68};
-\draw[line width=1mm](N4)--(N8)node[midway,fill=white,font=\tiny]{W21X68};
-\draw[line width=1mm](N8)--(N12)node[midway,fill=white,font=\tiny]{W21X68};
 \draw[line width=1mm](N1)--(N2)node[midway,fill=white,font=\tiny,rotate=90]{W14X193};
 \draw[line width=1mm](N5)--(N6)node[midway,fill=white,font=\tiny,rotate=90]{W14X193};
-\draw[line width=1mm](N9)--(N10)node[midway,fill=white,font=\tiny,rotate=90]{W14X193};
-\draw[line width=1mm](N2)--(N3)node[midway,fill=white,font=\tiny,rotate=90]{W14X159};
-\draw[line width=1mm](N6)--(N7)node[midway,fill=white,font=\tiny,rotate=90]{W14X159};
-\draw[line width=1mm](N10)--(N11)node[midway,fill=white,font=\tiny,rotate=90]{W14X159};
-\draw[line width=1mm](N3)--(N4)node[midway,fill=white,font=\tiny,rotate=90]{W14X159};
-\draw[line width=1mm](N7)--(N8)node[midway,fill=white,font=\tiny,rotate=90]{W14X159};
-\draw[line width=1mm](N11)--(N12)node[midway,fill=white,font=\tiny,rotate=90]{W14X159};
 \FixedSupport{N1}{.5}
 \FixedSupport{N5}{.5}
-\FixedSupport{N9}{.5}
 \draw[|<->|]($(N1)-(0,.3)$)--($(N5)-(0,.3)$)node[midway,fill=white]{\SI{20}{ft}};
-\draw[|<->|]($(N5)-(0,.3)$)--($(N9)-(0,.3)$)node[midway,fill=white]{\SI{20}{ft}};
 \draw[|<->|]($(N1)-(.5,0)$)--($(N2)-(.5,0)$)node[midway,fill=white,rotate=90]{\SI{10}{ft}};
-\draw[|<->|]($(N2)-(.5,0)$)--($(N3)-(.5,0)$)node[midway,fill=white,rotate=90]{\SI{10}{ft}};
-\draw[|<->|]($(N3)-(.5,0)$)--($(N4)-(.5,0)$)node[midway,fill=white,rotate=90]{\SI{10}{ft}};
 \end{tikzpicture}
