@@ -25,6 +25,13 @@ def upsample():
     two_column = np.vstack((up_time, up_motion)).T
     np.savetxt('../MODEL/FRAME/up_motion_time', two_column)
 
+    fig = plt.figure(figsize=(10, 6), dpi=200)
+    plt.plot(motion[:, 0], motion[:, 1], label='original')
+    plt.plot(up_time, up_motion, label='upsampled', linestyle='--', linewidth=.6)
+    plt.legend()
+    fig.tight_layout()
+    plt.show()
+
 
 def process_result(node):
     fig = plt.figure(figsize=(10, 6), dpi=200)
@@ -33,18 +40,19 @@ def process_result(node):
     plt.ylabel(r'Damping Force $F_v$')
     plt.xlim([20, 60])
 
-    name = 'R3-GDF'
+    name = 'R2-IF'
 
     with h5py.File(f'../MODEL/FRAME/{name}.h5', 'r') as f:
         data = f[name][f'{name}{node}']
         time = data[:, 0]
-        force = data[:, 1]
+        force = data[:, 2]
 
     with h5py.File(f'../MODEL/FRAME/up-{name}.h5', 'r') as f:
         data = f[name][f'{name}{node}']
-        force_up = data[:, 1]
+        force_up = data[:, 2]
 
-    plt.plot(time, np.abs(force - force_up) / np.max(np.abs(force_up)) * 100, label='original')
+    plt.plot(time, force, label='original')
+    plt.plot(time, force_up, label='upsampled', linestyle='--', linewidth=.6)
     plt.legend()
 
     fig.tight_layout()
@@ -58,4 +66,4 @@ def process_result(node):
 
 if __name__ == '__main__':
     process_result(2)
-    # upsample()
+    upsample()

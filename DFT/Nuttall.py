@@ -17,14 +17,14 @@ def process_result():
     with h5py.File('../MODEL/PureSine/NUTTALL.DF.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         plt.plot(data[:, 0], data[:, 1], linewidth=1)
-        plt.xlim([0, np.max(data[:, 0])])
+        plt.xlim([0, .5])
 
     with h5py.File('../MODEL/PureSine/Analytical.h5', 'r') as f:
         data = f['R2-DF']['R2-DF2']
         plt.plot(data[:, 0], data[:, 1], linewidth=2, linestyle='--', c='#e41a1c')
 
     plt.grid(True, which='both')
-    plt.legend(['interpolated external load', 'analytical external load'])
+    plt.legend(['interpolated external load', 'analytical external load'], loc='upper right')
 
     fig.add_subplot(412)
     plt.title('frequency response of damping force of the SDOF system')
@@ -60,7 +60,7 @@ def process_result():
     with h5py.File('../MODEL/PureSine/NUTTALL.IF.h5', 'r') as f:
         data = f['R3-IF']['R3-IF2']
         plt.plot(data[:, 0], data[:, 1], linewidth=1)
-        plt.xlim([0, np.max(data[:, 0])])
+        plt.xlim([0, .5])
 
     with h5py.File('../MODEL/PureSine/IFA.h5', 'r') as f:
         data = f['R3-IF']['R3-IF2']
