@@ -9,7 +9,7 @@ __SAVE__ = False
 def upsample():
     motion = np.loadtxt('../MODEL/FRAME/motion_time')
 
-    ratio = 4
+    ratio = 5
     bin_num = 32 * ratio
     window = signal.windows.nuttall(bin_num + 1)
     cutoff = 1 / ratio
@@ -17,7 +17,8 @@ def upsample():
     window /= np.sum(window)
     window *= ratio
 
-    up_time = np.linspace(0, ratio * len(motion), ratio * len(motion), endpoint=False) * motion[1, 0] / ratio
+    length = ratio * len(motion[:, 0])
+    up_time = np.linspace(0, length, length, endpoint=False) * motion[1, 0] / ratio
     up_motion = np.zeros(ratio * len(motion[:, 1]))
     up_motion[::ratio] = motion[:, 1]
     up_motion = np.convolve(up_motion, window, mode='same')
@@ -29,31 +30,42 @@ def upsample():
     plt.plot(motion[:, 0], motion[:, 1], label='original')
     plt.plot(up_time, up_motion, label='upsampled', linestyle='--', linewidth=.6)
     plt.legend()
+    # plt.xlim([24, 44])
+
     fig.tight_layout()
     plt.show()
 
 
 def process_result(node):
     fig = plt.figure(figsize=(10, 6), dpi=200)
-    plt.title(f'damping force history of node {node}')
+    fig.add_subplot(211)
+    plt.title(f'force history of node {node}')
     plt.xlabel('Time (s)')
-    plt.ylabel(r'Damping Force $F_v$')
-    plt.xlim([20, 60])
+    # plt.ylabel(r'Damping Force $F_v$')
+    plt.xlim([24, 44])
 
-    name = 'R2-IF'
+    name = 'R3-IF'
+    dof = 2
 
     with h5py.File(f'../MODEL/FRAME/{name}.h5', 'r') as f:
         data = f[name][f'{name}{node}']
         time = data[:, 0]
-        force = data[:, 2]
+        force = data[:, dof]
 
     with h5py.File(f'../MODEL/FRAME/up-{name}.h5', 'r') as f:
         data = f[name][f'{name}{node}']
-        force_up = data[:, 2]
+        force_up = data[:, dof]
 
     plt.plot(time, force, label='original')
     plt.plot(time, force_up, label='upsampled', linestyle='--', linewidth=.6)
     plt.legend()
+
+    fig.add_subplot(212)
+    amp = np.fft.rfft(force, 2 * len(force))
+    freq = np.fft.rfftfreq(2 * len(amp) - 2, time[1])
+    plt.plot(freq, np.abs(amp), label='original')
+    plt.plot(freq, np.abs(np.fft.rfft(force_up, 2 * len(force))), label='upsampled', linestyle='--', linewidth=.6)
+    plt.yscale('log')
 
     fig.tight_layout()
 
@@ -65,5 +77,8 @@ def process_result(node):
 
 
 if __name__ == '__main__':
-    process_result(2)
-    upsample()
+    for i in range(1, 28):
+        if i in {1, 10, 19, 28}:
+            continue
+        process_result(i)
+    # upsample()
