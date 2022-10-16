@@ -381,18 +381,35 @@ To close this section, we present a practical example of a cantilever wall under
 \begin{figure}[htb!]
 \centering\footnotesize
 \begin{tikzpicture}
-\FixedSupport[-90]{0,.5}{2}
-\FixedSupport[180]{1,2}{1}
-\draw(0,0)rectangle(4,1);
+\begin{axis}[
+width=8cm,height=5cm,
+axis lines=middle,
+xmin=10,
+xmax=60,
+ymin=-1,
+ymax=1,
+xlabel=Time (s),
+ylabel=Amplitude,]
+\addplot[line width=1pt,solid,color=blue]table{MODEL/FRAME/motion_time};
+\end{axis}
+\node at(4.5,.5){20110222\_015029\_MQZ\_N};
+\begin{scope}[xshift=8.5cm]
+\FixedSupport{.5,0}{2}
+\FixedSupport[-90]{-1,1}{1}
+\draw(0,0)rectangle(1,4);
 \draw[|<->|](-.5,0)--++(0,1)node[midway,fill=white]{\SI{3}{\meter}};
-\draw[|<->|](0,-.5)--++(4,0)node[midway,fill=white]{\SI{12}{\meter}};
-\draw(.5,0)node[draw,fill=red,circle,inner sep=0,minimum size=4pt]{}node[above]{N2};
-\draw(1.5,0)node[draw,fill=red,circle,inner sep=0,minimum size=4pt]{}node[above]{N4};
-\draw(1,1)node[draw,fill=white,circle,inner sep=0,minimum size=4pt]{}--++(0,1)node[draw,fill=white,circle,inner sep=0,minimum size=4pt]{}node[midway,right=2mm]{$EA=\SI{E3}{\giga\newton}$};
-\node[align=left]at(6.5,.5){\setstretch{1}thickness $t=\SI{200}{\milli\metre}$\\elastic modulus $E=\SI{30}{\giga\pascal}$\\Poisson's ratio $\nu=\num{0}$\\density $\rho=\SI{75}{\tonne\per\meter^3}$};
+\draw[|<->|](1.5,0)--++(0,4)node[midway,fill=white]{\SI{12}{\meter}};
+\draw[|<->|](0,-.5)--++(1,0)node[midway,fill=white]{\SI{3}{\meter}};
+\draw(1,.5)node[draw,fill=red,circle,inner sep=0,minimum size=4pt]{}node[left]{N2};
+\draw(1,1.5)node[draw,fill=red,circle,inner sep=0,minimum size=4pt]{}node[left]{N4};
+\draw(-1,1)node[draw,fill=white,circle,inner sep=0,minimum size=4pt]{}--++(1,0)node[draw,fill=white,circle,inner sep=0,minimum size=4pt]{}node[midway,above=2mm,rotate=90,anchor=west]{$EA=\SI{E3}{\giga\newton}$};
+\node[align=left]at(4.5,2){\setstretch{1}thickness $t=\SI{200}{\milli\metre}$\\elastic modulus $E=\SI{30}{\giga\pascal}$\\Poisson's ratio $\nu=\num{0}$\\density $\rho=\SI{75}{\tonne\per\meter^3}$\\Newmark method\\stiffness proportional\\damping $a_1=0.002$};
+\end{scope}
 \end{tikzpicture}
-\caption{a simple cantilever wall example (rotated to save space)}\label{fig:cantilever_model}
+\caption{a simple cantilever wall example}\label{fig:cantilever_model}
 \end{figure}
+
+The accelerogram is sampled at \SI{50}{\hertz}, while the time step size is chosen to be \SI{4}{\milli\second}. This results in an upsampling factor of $L=5$. Two filter windows are used: 1) triangular window (linear interpolation) and 2) Blackman-Nuttall window.
 
 Due to the presence of rigid link, the numerical model contains high frequency components. \figref{fig:practical_example} shows the inertial force history of nodes 2 and 4.
 \begin{figure}[htb!]
