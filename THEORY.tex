@@ -377,9 +377,27 @@ The Newmark method only possesses a first order accuracy when $\gamma>0.5$, othe
 \end{figure}
 \figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised-$\alpha$ time integration method.
 \subsection{A Practical Example}
+To close this section, we present a practical example of a cantilever wall under seismic load. The model is depicted in \figref{fig:cantilever_model}.
+\begin{figure}[htb!]
+\centering\footnotesize
+\begin{tikzpicture}
+\FixedSupport[-90]{0,.5}{2}
+\FixedSupport[180]{1,2}{1}
+\draw(0,0)rectangle(4,1);
+\draw[|<->|](-.5,0)--++(0,1)node[midway,fill=white]{\SI{3}{\meter}};
+\draw[|<->|](0,-.5)--++(4,0)node[midway,fill=white]{\SI{12}{\meter}};
+\draw(.5,0)node[draw,fill=red,circle,inner sep=0,minimum size=4pt]{}node[above]{N2};
+\draw(1.5,0)node[draw,fill=red,circle,inner sep=0,minimum size=4pt]{}node[above]{N4};
+\draw(1,1)node[draw,fill=white,circle,inner sep=0,minimum size=4pt]{}--++(0,1)node[draw,fill=white,circle,inner sep=0,minimum size=4pt]{}node[midway,right=2mm]{$EA=\SI{E3}{\giga\newton}$};
+\node[align=left]at(6.5,.5){\setstretch{1}thickness $t=\SI{200}{\milli\metre}$\\elastic modulus $E=\SI{30}{\giga\pascal}$\\Poisson's ratio $\nu=\num{0}$\\density $\rho=\SI{75}{\tonne\per\meter^3}$};
+\end{tikzpicture}
+\caption{a simple cantilever wall example (rotated to save space)}\label{fig:cantilever_model}
+\end{figure}
+
+Due to the presence of rigid link, the numerical model contains high frequency components. \figref{fig:practical_example} shows the inertial force history of nodes 2 and 4.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/FrameExample-2}
 \includegraphics{PIC/FrameExample-4}
-\caption{inertial force history and spectrum Blackman--Nuttall window}
+\caption{inertial force history and spectrum Blackman--Nuttall window}\label{fig:practical_example}
 \end{figure}
