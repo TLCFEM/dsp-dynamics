@@ -93,7 +93,7 @@ h\left(t\right)=\dfrac{1}{m\omega_d}\exp\left(-\zeta\omega_nt\right)\sin\left(\o
 \end{gather}
 where $m$ is the mass, $c$ is the damping coefficient, $k$ is the stiffness, $\omega_n=\sqrt{\dfrac{k}{m}}$ is the natural frequency of the system, $\zeta=\dfrac{c}{2\sqrt{mk}}$ is the damping ratio, $\omega_d=\omega_n\sqrt{1-\zeta^2}$ is the damped frequency. The following discussion is confined within underdamped cases ($\zeta<1$).
 
-\eqsref{eq:duhamel} can be conveniently evaluated in the frequency domain via unilateral Laplace transform, such that
+\eqsref{eq:duhamel} can be conveniently evaluated in the frequency domain via unilateral Laplace transform \citep[see, e.g.,][]{Lee1990}, such that
 \begin{gather}
 \hat{u}\left(\omega\right)=\mathscr{L}\left\{u\left(t\right)\right\}=\mathscr{L}\left\{p\left(t\right)\right\}\cdot\mathscr{L}\left\{h\left(t\right)\right\}=\hat{p}\left(\omega\right)\cdot\hat{h}\left(\omega\right),
 \end{gather}
@@ -346,8 +346,12 @@ With those windows, one can repeat the procedure to obtain the distributions of 
 \caption{normalised damping/inertial force magnitude with mass proportional damping and Blackman--Nuttall window}\label{fig:map_mass_nuttall}
 \end{figure}
 \subsection{Other Recommendations}
-\subsubsection{Avoid Upsampling}
+\subsubsection{Avoid Upsampling/Interpolation}
 The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
+\subsubsection{Better Interpolation}
+Generally speaking, low--pass FIR filters cannot retained the magnitudes of original samples unless they are carefully designed such that the filter length equals $2L-1$. This is not considered as an major issue as it is likely that the digital seismogram is already preprocessed via a band--pass filter.
+
+Alternatively, other interpolations can be used. \citet{Lee1989} discussed a number of methods of different orders. The cubic spline interpolation \citep[see][\S~3.5]{Burden2011} is another better alternative to the linear interpolation.
 \subsubsection{Time Integration with Algorithmic Damping}
 It is widely accepted by the community that the presence of algorithmic damping (with proper amount properly distributed) is beneficial.
 
