@@ -33,7 +33,7 @@ def upsample():
     plt.plot(motion[:, 0], motion[:, 1], label='original', marker='o', markevery=5)
     plt.plot(up_time, up_motion, label='upsampled', marker='o', markevery=5, linewidth=.6)
     plt.legend()
-    plt.xlim([24, 40])
+    plt.xlim([24, 34])
 
     fig.tight_layout()
     plt.show()
@@ -45,7 +45,7 @@ def process_result(node):
     plt.title(f'inertial force history of node {node}')
     plt.xlabel('Time (s)')
     plt.ylabel(r'Inertial Force $F_a$')
-    plt.xlim([24, 40])
+    plt.xlim([24, 34])
 
     name = 'R3-IF'
     dof = 2

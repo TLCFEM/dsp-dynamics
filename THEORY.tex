@@ -409,9 +409,11 @@ ylabel=Amplitude,]
 \caption{a simple cantilever wall example}\label{fig:cantilever_model}
 \end{figure}
 
-The accelerogram is sampled at \SI{50}{\hertz}, while the time step size is chosen to be \SI{4}{\milli\second}. This results in an upsampling factor of $L=5$. Two filter windows are used: 1) triangular window (linear interpolation) and 2) Blackman-Nuttall window.
+The accelerogram is sampled at \SI{50}{\hertz}, while the time step size is chosen to be \SI{4}{\milli\second}. This results in an upsampling factor of $L=5$. Two filter windows are used: 1) triangular window (linear interpolation) and 2) Blackman-Nuttall window. All other parameters are identical in two analyses.
 
-Due to the presence of rigid link, the numerical model contains high frequency components. \figref{fig:practical_example} shows the inertial force history of nodes 2 and 4.
+\figref{fig:practical_example} shows the inertial force history of nodes 2 and 4. Due to the presence of rigid link, the numerical model contains high frequency components, which mainly affect the lower part (below rigid link). The imaging frequency caused by linear interpolation shows a significant contribution to inertial force history at node 2. As a result, it exhibits a larger profile compared to its counterpart using the Blackman--Nuttall window. The response of upper part (above rigid link) is mainly dominated by low frequency modes, causing a smaller profile as can be seen in the inertial force history of node 4.
+
+In general, it is not feasible to predict whether the imaging frequency would cause significant discrepancy in dynamic response of oscillating systems, let alone to quantitatively determine its magnitude, as it would be affected by many factors, including various properties of both input load and the system itself.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/FrameExample-2}
