@@ -379,7 +379,9 @@ The Newmark method only possesses a first order accuracy when $\gamma>0.5$, othe
 \includegraphics{PIC/Nuttall.Example}
 \caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using Blackman--Nuttall window and the generalised-$\alpha$ time integration method with $\rho_\infty=0.5$}\label{fig:nuttall_example}
 \end{figure}
-\figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised-$\alpha$ time integration method.
+\figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised-$\alpha$ time integration method, while all other configurations remain unchanged.
+
+It is evident that with a better attenuation at imaging frequencies, the quantity of numerical results can be greatly improved, which allows more accurate and confident interpretation.
 \subsection{A Practical Example}
 To close this section, we present a practical example of a cantilever wall under seismic load. The model is depicted in \figref{fig:cantilever_model}.
 \begin{figure}[htb!]
@@ -413,11 +415,11 @@ ylabel=Amplitude,]
 \caption{a simple cantilever wall example}\label{fig:cantilever_model}
 \end{figure}
 
-The accelerogram is sampled at \SI{50}{\hertz}, while the time step size is chosen to be \SI{4}{\milli\second}. This results in an upsampling factor of $L=5$. Two filter windows are used: 1) triangular window (linear interpolation) and 2) Blackman-Nuttall window. All other parameters are identical in two analyses.
+The accelerogram is sampled at \SI{50}{\hertz}, while the time step size is chosen to be \SI{4}{\milli\second}. This results in an upsampling factor of $L=5$. Two filter windows are used: 1) triangular window (linear interpolation) and 2) Blackman--Nuttall window. All other parameters are identical in two analyses.
 
-\figref{fig:practical_example} shows the inertial force history of nodes 2 and 4. Due to the presence of rigid link, the numerical model contains high frequency components, which mainly affect the lower part (below rigid link). The imaging frequency caused by linear interpolation shows a significant contribution to inertial force history at node 2. As a result, it exhibits a larger profile compared to its counterpart using the Blackman--Nuttall window. The response of upper part (above rigid link) is mainly dominated by low frequency modes, causing a smaller profile as can be seen in the inertial force history of node 4.
+\figref{fig:practical_example} shows the inertial force history of nodes 2 and 4. Due to the presence of rigid link, the numerical model contains high frequency components, which mainly affect the lower part (below rigid link). The imaging frequency caused by linear interpolation shows a significant contribution to inertial force history at node 2. As a result, it exhibits a larger profile compared to its counterpart using the Blackman--Nuttall window. The response of upper part (above rigid link) is mainly dominated by low frequency modes, causing a smaller profile as can be seen in the inertial force history of node 4. Although it may appear difficult to determine which result is more accurate by solely looking at those two sets of results, from the aforementioned discussion, one can confidently conclude that the response due to filtered (via the Blackman--Nuttall window) ground motion is more reliable. According to Rayleigh’s energy theorem, the total energy represented by the filtered record is closer to that of the earthquake event.
 
-In general, it is not feasible to predict whether the imaging frequency would cause significant discrepancy in dynamic response of oscillating systems, let alone to quantitatively determine its magnitude, as it would be affected by many factors, including various properties of both input load and the system itself.
+In general, it is not feasible to predict whether the imaging frequency would cause significant discrepancy in dynamic response of oscillating systems, let alone to quantitatively determine its magnitude, as it would be affected by many factors, including various properties of both input load and the system itself. As a universal pre-processing protocol, it is thus recommended to \textbf{always} use a proper filter to filter the ground motion record before performing any response history analysis.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/FrameExample-2}
