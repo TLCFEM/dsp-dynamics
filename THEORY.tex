@@ -250,7 +250,7 @@ If the oscillator system is deemed as a filter system, it is evident that the fu
 
 Ideally, a low--pass filter that possesses high roll--off rate and low side lobe level can suppress the images caused by upsampling to the level that the corresponding spurious responses won't have a significant impact on final results, even after scaling up by a factor of $-\omega^2$.
 
-In the following, we show a number of different windows in \figref{fig:nuttall_window}, \figref{fig:flattop_window}, \figref{fig:kaiser_window} and \figref{fig:cheb_window}, including the Blackman--Nuttall window, the flat top window, the Kaiser family and the Chebyshev family. Those are commonly used windows \citep{Oppenheim2010}. The number of bins is chosen to be $32L+1$ ($L=10$ in this work) to obtain a side lobe level around \SI{-100}{\decibel}.
+In the following, we show a number of different windows in \figref{fig:nuttall_window}, \figref{fig:flattop_window}, \figref{fig:kaiser_window} and \figref{fig:cheb_window}, including the Blackman--Nuttall window, the flat top window, the Kaiser family and the Chebyshev family. Those are commonly used windows \citep{Oppenheim2010} in design of FIR filters. The number of bins is chosen to be $32L+1$ ($L=10$ in this work) to obtain a side lobe level around \SI{-100}{\decibel}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/Window-Nuttall}
