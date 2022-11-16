@@ -1,2 +1,10 @@
 \section{Introduction}
+Within the dynamic analysis workflow, various types of spurious responses stemming from different parts have been identified by researchers. To name a few,
+\begin{enumerate}
+\item error contained in the collected/applied input (either displacement or force) \citep{Shing1987},
+\item in the case of damped system, the specific damping model used \citep{Chopra2015},
+\item properties of the numerical time integration methods (associated with the spurious root) \citep{Hulbert1994}.
+\end{enumerate}
+Each of the processes must be taken care of with great caution in order to obtain reasonable and reliable numerical results.
+
 In this work, in order to reveal the spurious response due to interpolation, the analytical expressions for damping/inertial forces of linear systems under upsampled external loads in the frequency domain are derived using the Fourier transform as the main tool. It is then further elaborated with the numerical simulation of a simple SDOF oscillator. Remedies and recommendations to ease the issue are then discussed. To showcase its impact on practical structures, a constrained cantilever is analysed under seismic loading. Based on the discussions, a revised analysis workflow is proposed for response history analysis.
