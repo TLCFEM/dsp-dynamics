@@ -340,6 +340,12 @@ With those windows, one can repeat the procedure to obtain the distributions of 
 \end{subfigure}
 \caption{normalised damping/inertial force magnitude with mass proportional damping and Blackman--Nuttall window}\label{fig:map_mass_nuttall}
 \end{figure}
+
+If such a spurious response has to be suppressed to under \SI{-40}{\decibel}, which corresponds to \SI{1}{\percent}, it is easy to estimate the required side lobe level by using the upsampled Nyquist frequency $Lf_s/2$ such that
+\begin{gather}
+20\log\left(\dfrac{0.01}{\left(\dfrac{Lf_s}{2}\right)^2}\right)=20\log\left(\dfrac{0.04}{L^2f_s^2}\right).
+\end{gather}
+For $Lf_s=\SI{100}{\hertz}$, this gives \SI{-108}{\decibel}. For $Lf_s=\SI{500}{\hertz}$, this gives \SI{-136}{\decibel}.
 \subsection{Other Recommendations}
 \subsubsection{Avoid Upsampling/Interpolation}
 The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
