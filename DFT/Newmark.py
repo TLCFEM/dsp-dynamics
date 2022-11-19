@@ -10,22 +10,22 @@ __SAVE__ = True
 
 def compute_transfer(k, c, m, h, gamma, beta, f):
     mat_a = np.zeros((2, 2))
-    mat_a[0, 0] = (gamma - 1) * h * k / m
-    mat_a[0, 1] = 1 + (gamma - 1) * h * c / m
-    mat_a[1, 0] = 1 + (beta - .5) * h * h * k / m
-    mat_a[1, 1] = h + (beta - .5) * h * h * c / m
+    mat_a[0, 0] = 1 + (beta - .5) * h * h * k / m
+    mat_a[0, 1] = h + (beta - .5) * h * h * c / m
+    mat_a[1, 0] = (gamma - 1) * h * k / m
+    mat_a[1, 1] = 1 + (gamma - 1) * h * c / m
 
     mat_b = np.zeros((2, 2))
-    mat_b[0, 0] = (1 - gamma) * h / m
-    mat_b[0, 1] = gamma * h / m
-    mat_b[1, 0] = (.5 - beta) * h * h / m
-    mat_b[1, 1] = beta * h * h / m
+    mat_b[0, 0] = (.5 - beta) * h * h / m
+    mat_b[0, 1] = beta * h * h / m
+    mat_b[1, 0] = (1 - gamma) * h / m
+    mat_b[1, 1] = gamma * h / m
 
     mat_c = np.zeros((2, 2))
-    mat_c[0, 0] = gamma * h * k / m
-    mat_c[0, 1] = 1 + gamma * h * c / m
-    mat_c[1, 0] = 1 + beta * h * h * k / m
-    mat_c[1, 1] = beta * h * h * c / m
+    mat_c[0, 0] = 1 + beta * h * h * k / m
+    mat_c[0, 1] = beta * h * h * c / m
+    mat_c[1, 0] = gamma * h * k / m
+    mat_c[1, 1] = 1 + gamma * h * c / m
 
     scalar_d = np.exp(f * h * 1j)
     mat_e = np.zeros((2, 1), dtype=complex)
@@ -72,7 +72,7 @@ def generate_figure(gamma, dt=1 / 2000):
 
     beta = .25 * (.5 + gamma) ** 2
 
-    freq = np.logspace(0, 3, 1000)
+    freq = np.logspace(0, np.log10(1 / dt / 2), 1000)
 
     fig = plt.figure(figsize=(6, 2), dpi=200)
     plt.title(rf'Newmark method with $\gamma={gamma}$ and $\beta={beta:.4g}$')
@@ -83,7 +83,7 @@ def generate_figure(gamma, dt=1 / 2000):
         response[f] = np.abs(compute_response(f * 2 * np.pi, freq, dt, gamma, beta))
         min_y = min(min_y, np.min(response[f]))
         max_y = max(max_y, np.max(response[f]))
-        plt.plot(freq, response[f], label=f'$f_n={f}$ Hz', linestyle=next(LS))
+        plt.loglog(freq, response[f], label=f'$f_n={f}$ Hz', linestyle=next(LS))
 
     min_y = 10 ** (np.log10(min_y) - .1)
     max_y = 10 ** (np.log10(max_y) + .1)
@@ -92,9 +92,7 @@ def generate_figure(gamma, dt=1 / 2000):
     plt.grid(which='both', linestyle='--', linewidth=.5)
     plt.xlabel('Frequency (Hz)')
     plt.ylabel(r'$|\hat{h}_{NM}|/|\hat{h}|$')
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.ylim(max(min_y, 1e-3), min(max_y, 1e1))
+    plt.ylim(max(min_y, 1e-2), max_y)
     fig.tight_layout()
     if __SAVE__:
         fig.savefig(f'../PIC/Newmark-{gamma}-{dt * 1000}.pdf', format='pdf')
