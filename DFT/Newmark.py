@@ -1,7 +1,10 @@
+import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
 from FundamentalSolution import get_line_style
+
+matplotlib.rcParams.update({'font.size': 6})
 
 LS = get_line_style()
 
@@ -74,7 +77,7 @@ def generate_figure(gamma, dt=1 / 2000):
 
     freq = np.logspace(0, np.log10(1 / dt / 2), 1000)
 
-    fig = plt.figure(figsize=(6, 2), dpi=200)
+    fig = plt.figure(figsize=(6, 1.7), dpi=200)
     plt.title(rf'Newmark method with $\gamma={gamma}$ and $\beta={beta:.4g}$')
 
     min_y = 1

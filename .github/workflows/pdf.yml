@@ -23,6 +23,7 @@ jobs:
           python Newmark.py
           python Nuttall.py
           python FrameResult.py
+          python Deformation.py
           cd ..
       - name: Compile
         uses: xu-cheng/texlive-action/full@v1

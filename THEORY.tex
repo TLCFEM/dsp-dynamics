@@ -239,7 +239,33 @@ Given that numerical models inevitably contain high frequency modes due to, for 
 
 In the case of multiple degrees of freedom (MDOF) system, depending on the distribution of natural frequencies and the components of the external load, as well as the upsampling ratio, it is possible that higher modes produce significant response due to, for example, being closer to imaging frequencies. The final numerical results may contain a considerably large portion of spurious response.
 \subsection{Load Applied As Displacement}
-In the previous example, we illustrate
+In the previous example, we illustrate the spurious response caused by linear interpolation in the context of load is applied as (inertial) force. In some displacement controlled applications, external loads can be applied in form of deformation. Two options are typically available: 1) directly apply the recorded displacement on target DoFs, or 2) convert recorded acceleration to displacement by integration and apply it on target DoFs. The first approach is \textbf{not} immune to the spurious response as long as linear interpolation is used. The second approach is thus \textbf{preferred}. However, it must be pointed out that the integration from acceleration record to displacement record must comply with the time integration method used.
+
+Take the Newmark method as the example, the integration equations can be expressed as follows using the signal notation.
+\begin{gather}\label{eq:nm_u}
+u[n+1]=u[n]+\Delta{}tv[n]+\left(\dfrac{1}{2}-\beta\right)\Delta{}t^2a[n]+\beta\Delta{}t^2a[n+1],\\\label{eq:nm_v}
+v[n+1]=v[n]+\left(1-\gamma\right)\Delta{}ta[n]+\gamma\Delta{}ta[n+1].
+\end{gather}
+Shifting index of \eqsref{eq:nm_u}, one could obtain
+\begin{gather}
+u[n+2]=u[n+1]+\Delta{}tv[n+1]+\left(\dfrac{1}{2}-\beta\right)\Delta{}t^2a[n+1]+\beta\Delta{}t^2a[n+2],
+\end{gather}
+then $v[n+1]$ and $v[n]$ can be eliminated with the assist of \eqsref{eq:nm_v} such that
+\begin{multline}\label{eq:nw_ua}
+u[n+2]-2u[n+1]+u[n]=\\
+\left(\dfrac{1}{2}+\beta-\gamma\right)\Delta{}t^2a[n]+\left(\dfrac{1}{2}+\gamma-2\beta\right)\Delta{}t^2a[n+1]+\beta\Delta{}t^2a[n+2].
+\end{multline}
+Only when $u[n]$ is computed based on \eqsref{eq:nw_ua} (not any other integrations), the same $a[n]$ can be obtained on prescribed DoFs as their velocity and acceleration responses are solely governed by \eqsref{eq:nm_u} and \eqsref{eq:nm_v} for a given displacement history. The absence of spurious response is thus guaranteed as long as the original $a[n]$ does not contain significant high frequency components.
+%If $a[n]$ is deemed as input while $u[n]$ is deemed as output (which will be applied to the system as the equivalent mean to apply recorded acceleration), by assuming trivial initial conditions ($u[-1]=u[0]=0$ and $a[-1]=a[0]=0$), the transfer function can be calculated via the Z-transform.
+%\begin{gather}
+%\dfrac{U\left(z\right)}{A\left(z\right)}=\dfrac{\mathscr{Z}\{u[n]\}}{\mathscr{Z}\{a[n]\}}=\Delta{}t^2\dfrac{\beta{}+\left(\dfrac{1}{2}+\gamma-2\beta\right)z^{-1}+\left(\dfrac{1}{2}+\beta-\gamma\right)z^{-2}}{1-2z^{-1}+z^{-2}}.
+%\end{gather}
+%
+%\begin{figure}[htb]
+%\centering
+%\includegraphics{PIC/Deformation.TF}
+%\caption{transfer function between $u[n]$ and $a[n]$ with Newmark method}\label{fig:nm_tf}
+%\end{figure}
 \section{Remedies and Recommendations}
 As can be seen in \figref{fig:sdof_force}, using analytical expression for external load is clearly a solution that can fully suppress spurious response. However, this is not an option as the analytical expression of seismograph cannot be reconstructed easily.
 \subsection{Low--pass Filters with Better Attenuation}
@@ -358,12 +384,7 @@ Alternatively, other interpolations can be used. \citet{Lee1989} discussed a num
 \subsubsection{Time Integration with Algorithmic Damping}
 It is widely accepted by the community that the presence of algorithmic damping (with proper amount properly distributed) is beneficial.
 
-Take the popular Newmark method as the example, the integration equations can be expressed as follows using the signal notation.
-\begin{gather}
-u[n+1]=u[n]+\Delta{}tv[n]+\left(\dfrac{1}{2}-\beta\right)\Delta{}t^2a[n]+\beta\Delta{}t^2a[n+1],\\
-v[n+1]=v[n]+\left(1-\gamma\right)\Delta{}ta[n]+\gamma\Delta{}ta[n+1].
-\end{gather}
-The above equations can be used to derive the numerical transfer function that approximates the theoretical one \eqsref{eq:analytical_transfer}. \citet{Preumont1982} presented an analysis of several time integration methods in frequency domain and derived the corresponding transfer functions. \citet{AriasTrujillo2012} carried out similar research and benchmarked a number of different time integration algorithms. Relevant methodology is directly adopted in this work. One can plot the ratio between numerical and analytical transfer functions.
+Again, consider the Newmark method, equations \eqsref{eq:nm_u} and \eqsref{eq:nm_v} can be used to derive the numerical transfer function that approximates the theoretical one \eqsref{eq:analytical_transfer}. \citet{Preumont1982} presented an analysis of several time integration methods in frequency domain and derived the corresponding transfer functions. \citet{AriasTrujillo2012} carried out similar research and benchmarked a number of different time integration algorithms. Relevant methodology is directly adopted in this work. One can plot the ratio between numerical and analytical transfer functions. By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/Newmark-0.8-0.5}
@@ -371,7 +392,7 @@ The above equations can be used to derive the numerical transfer function that a
 \includegraphics{PIC/Newmark-1.5-0.5}
 \caption{ratio between numerical and analytical transfer functions ($\Delta{}t=\SI{0.005}{\second}$ and $\zeta=0.05$)}\label{fig:newmark_alg_damping}
 \end{figure}
-By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced. As can be seen in \figref{fig:newmark_alg_damping}, with proper set of parameters, high frequency responses (around resonance and onwards) can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response. One must be aware of the fact that the numerical integration error increases as $f\Delta{}t$ increases. Thus, results closer to upsampled Nyquist frequency $Lf_s/2$ contain significantly error that may suppress high frequency response in some cases, or amplify it in others. Time integration methods with better accuracy is always preferred.
+\figref{fig:newmark_alg_damping} shows the ratio between numerical ($\hat{h}_{NM}$) and theoretical ($\hat{h}$) transfer functions. As can be seen, with proper set of parameters, high frequency responses (around resonance and onwards) can be suppressed by algorithmic damping. However, it is noticed that the spurious response could be several orders of magnitude larger than low frequency response, especially for inertial force, the roll--off rate of algorithmic damping is not great enough to sufficiently suppress spurious response. One must be aware of the fact that the numerical integration error increases as $f\Delta{}t$ increases. Thus, results closer to upsampled Nyquist frequency $Lf_s/2$ contain significantly error that may suppress high frequency response in some cases, or amplify it in others. Time integration methods with better accuracy is always preferred.
 
 Also, noting that since the original signal is upsampled, the upsampling factor $L$ shall be taken into consideration. Given that $Lf_s\Delta{}t=1$, instead of $\Delta{}t/T_n$ where $T_n$ is the natural period of interest, one shall use $\Delta{}t/T_n/L$ to distinguish between `low' and `high' frequency regions as images reside between $f_s/2$ (Nyquist frequency of original signal) and $Lf_s/2$ (Nyquist frequency of upsampled signal).
 

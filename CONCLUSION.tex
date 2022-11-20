@@ -3,9 +3,12 @@ In this work, we demonstrate and quantitatively analyse one type of spurious res
 
 \begin{figure}[htb!]
 \centering\footnotesize
-\tikzstyle{label}=[rectangle,rounded corners,minimum width=3cm,minimum height=1cm,text centered,draw=black,fill=gray!20]
+\tikzstyle{label}=[rectangle,rounded corners,minimum width=3cm,minimum height=1cm,text centered,draw=black,fill=gray!10]
 \tikzstyle{exp}=[rectangle,rounded corners,minimum width=2cm,minimum height=1cm,text centered,draw=black,fill=gray!10]
 \begin{tikzpicture}
+\pgfdeclarelayer{background layer}
+\pgfsetlayers{background layer,main}
+\definecolor{RoyalBlue}{rgb}{0,.443,.737}
 \node(original)[label]{Original Load Record};
 \node(extended)[label,below of=original,yshift=-1cm]{Extend (Zero--stuffed)};
 \node(filter)[label,below of=extended,yshift=-1cm]{Low--pass Filter};
@@ -15,28 +18,36 @@ In this work, we demonstrate and quantitatively analyse one type of spurious res
 \draw[->](extended)--(filter);
 \draw[->](filter)--(oscillator);
 \draw[->](oscillator)--(system);
-\node[xshift=5cm,right of=original,align=center]{either force or displacement\\either processed or unprocessed};
-\node[xshift=5cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
-\node[xshift=5cm,right of=filter,align=center]{design a FIR filter\\using a proper window\\with desired attributes};
-\node[xshift=5cm,right of=oscillator,align=center]{use a proper time integration\\method with proper algorithmic\\damping};
-\node[xshift=5cm,right of=system,align=center]{examine frequency components\\via DFT};
-\node(p)[exp,xshift=-5cm,right of=original,align=center]{$\hat{p}$};
-\node(pe)[exp,xshift=-5cm,right of=extended,align=center]{$\hat{p_e}$};
-\node(g)[exp,xshift=-5cm,right of=filter,align=center]{$\hat{g}$};
-\node(h)[exp,xshift=-5cm,right of=oscillator,align=center]{$\hat{h}$};
-\node(f)[exp,xshift=-5cm,right of=system,align=center]{$\hat{F_u}$, $\hat{F_v}$, $\hat{F_a}$};
-\draw[->](p)--(pe)node[midway,right]{$[\uparrow{}L]$};
-\draw[->](pe)--(g)node[midway,right]{$\times\hat{g}$};
-\draw[->](g)--(h)node[midway,right]{$\times\hat{h}$};
-\draw[->](h)--(f)node[midway,right]{$\times\{1,i\omega,-\omega^2\}$};
+\node[xshift=4cm,right of=original,align=center]{either processed\\or unprocessed};
+\node[xshift=4cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
+\node[xshift=4cm,right of=filter,align=center]{design a filter, for FIR,\\using a proper window\\with desired attributes};
+\node[xshift=4cm,right of=oscillator,align=center]{proper time integration\\method with proper\\algorithmic damping};
+\node(dft)[xshift=4cm,right of=system,align=center]{examine frequency\\components via DFT};
+\node(p)[exp,xshift=-6cm,right of=original,align=center]{$\hat{p}$};
+\node(pe)[exp,xshift=-6cm,right of=extended,align=center]{$\hat{p_e}$};
+\node(g)[exp,xshift=-6cm,right of=filter,align=center]{$\hat{g}\cdot\hat{p_e}$};
+\node(h)[exp,xshift=-6cm,right of=oscillator,align=center]{$\hat{h}\cdot\hat{g}\cdot\hat{p_e}$};
+\node(f)[exp,xshift=-6cm,right of=system,align=center]{$\hat{F_u}$, $\hat{F_v}$, $\hat{F_a}$};
+\draw[->](p)--(pe)node[midway,fill=RoyalBlue!20]{$[\uparrow{}L]$};
+\draw[->](pe)--(g)node[midway,fill=RoyalBlue!20]{$\times\hat{g}$};
+\draw[->](g)--(h)node[midway,fill=RoyalBlue!20]{$\times\hat{h}$};
+\draw[->](h)--(f)node[midway,fill=RoyalBlue!20]{$\times\{1,i\omega,-\omega^2\}$};
+\node(procedure)[above of=original]{procedure};
+\node(note)[xshift=4cm,right of=procedure]{notes};
+\node(freq)[xshift=-6cm,right of=procedure]{frequency domain};
+\begin{pgfonlayer}{background layer}
+\fill[RoyalBlue!20,draw=black,rounded corners=1mm]($(freq)+(-2,.5)$)rectangle($(f)+(2,-1)$);
+\fill[RoyalBlue!20,draw=black,rounded corners=1mm]($(procedure)+(-2,.5)$)rectangle($(system)+(2,-1)$);
+\fill[RoyalBlue!20,draw=black,rounded corners=1mm]($(note)+(-2.25,.5)$)rectangle($(dft)+(2.25,-1)$);
+\end{pgfonlayer}
 \end{tikzpicture}
 \caption{typical analysis flow with recommendations}\label{fig:workflow}
 \end{figure}
 
 Through a number of examples, it is evident that the linear interpolation is neither ideal or reliable. The following recommendations are made.
 \begin{enumerate}
-\item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, analysts shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval and is determined by the property of the dynamic system of interest. Then, the seismogram shall be processed by upsampling. A low--pass filter with sufficiently small side lobe level shall be applied to suppress any components above the Nyquist frequency.
-\item The high frequency noise exists intrinsically and can be spotted analytically. Algorithmic damping can alleviate the issue but only to a limited degree, nevertheless, it is still beneficial to adopt a time integration method with adjustable algorithmic damping. In this regard, the de facto Newmark method with average constant acceleration ($\gamma=0.5$ and $\beta=0.25$), which is widely used in seismic engineering, is not recommended.
+\item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, analysts shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval and is determined by the property of the dynamic system of interest. Then, the seismogram shall be processed by upsampling. A low--pass filter with sufficiently small side lobe level shall be applied to suppress any components above the original Nyquist frequency.
+\item The high frequency noise exists intrinsically and can be spotted analytically. Algorithmic damping can alleviate the issue but only to a limited degree, nevertheless, it is still beneficial to adopt a time integration method with adjustable algorithmic damping. In this regard, the de facto Newmark method with average constant acceleration ($\gamma=0.5$ and $\beta=0.25$), which is widely used, is not recommended.
 \end{enumerate}
 
 Based on the above recommendations, the following workflow is proposed for conventional response history analysis, which is also summarised in \figref{fig:workflow}.
@@ -46,9 +57,9 @@ Based on the above recommendations, the following workflow is proposed for conve
 \item Design a proper upsampling filter so that time step size matches upsampling interval.
 \item Avoid high frequency modes in the target structure. Constraints are better implemented via the Lagrange multiplier method.
 \item Perform analysis using filtered record and a time integration method with adjustable algorithmic damping.
-\item Examine final results to ensure there is no significant high frequency components.
+\item Examine final results to ensure there are no significant high frequency components.
 \end{enumerate}
 
-For software vendors, in addition to the de facto linear interpolation, extra options shall be provided when it comes to processing tabular data. In absence of an explicitly defined processing of input ground motion record, a default upsampling procedure with proper filter parameters can be applied whenever a response history analysis task is created.
+For software vendors, in addition to the de facto linear interpolation, extra options shall be provided when it comes to processing tabular data. Unless the desired load can be accurately represented in a tabular form, in absence of an explicitly defined processing of input load, a default upsampling procedure with proper filter parameters can be applied.
 
 The numerical examples are carried out using \texttt{suanPan} \citep{Chang2022}. Scripts to generate figures and models can be found online.\footnote{\url{https://github.com/TLCFEM/dsp-dynamics}}
