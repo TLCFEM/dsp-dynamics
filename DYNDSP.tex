@@ -3,6 +3,7 @@
 \usepackage{amsmath,amsfonts,amssymb,siunitx,float,subcaption,setspace,booktabs,diagbox,bm,tikz,structmech,mathtools,tikz-3dplot,pgfplots,gnuplot-lua-tikz,url,mathrsfs}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{lineno}
 \usetikzlibrary{shapes.geometric,backgrounds}
 \pgfplotsset{compat=1.8}
 \journal{}
@@ -55,6 +56,7 @@
 }}{\kern2pt\hrule\relax
 \end{center}}
 \begin{document}
+\linenumbers
 \begin{abstract}
 The time history analysis provides a convenient and efficient tool to analyse and predict the dynamic response of vibration systems. However, the corresponding numerical results are not error free. Researchers have identify various types of spurious responses. In this work, one type of spurious responses, caused by interpolation, is quantified in linear systems. It is further shown that both damping force and inertial force could be affected by the identified spurious response. The conclusion can be extrapolated to non-linear systems with multiple degrees of freedom. To ease the issue and to improve the quality of numerical results, remedies and recommendation to the existing analysis workflow are presented.
 \end{abstract}
