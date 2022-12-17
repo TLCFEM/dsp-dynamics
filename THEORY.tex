@@ -192,7 +192,9 @@ We derive the transfer functions $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f
 \end{gather}
 The filter kernel $\hat{g}\left(f\right)$ can take various forms, depending on the specific type of filters chosen. For linear interpolation (triangular window), it possesses the analytical expression as shown in \eqsref{eq:tri_kernel}. The terms $\hat{k_v}\left(f\right)$ and $\hat{k_a}\left(f\right)$ also takes various forms, as shown in \eqsref{eq:damping_constant}, \eqsref{eq:damping_mass}, \eqsref{eq:damping_stiffness} and \eqsref{eq:inertial_force}, depending on the type of damping used.
 
-One can evaluate $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ over the whole frequency domain for different damping models and upsampling filters. Two example are given as follows.
+It shall be noted that the above discussion is purely analytical, without potential numerical errors introduced by various numerical time integrations and other similar approximations. The transfer functions $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ essentially reveal how the imaging frequencies existing in the input would eventually affect the output response. Thus, they can be used as indicators of errors solely stemming from upsampling/interpolation of the input load.
+
+One can evaluate $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ over the whole frequency domain for different damping models and upsampling filters, and compare the relative magnitudes between two regions, in the case of the chosen signal, $f\in[\SI{0}{\hertz},\SI{100}{\hertz}]$ and $f\in[\SI{100}{\hertz},\SI{1000}{\hertz}]$. Two examples are given as follows.
 \begin{figure}[htb!]
 \centering
 \begin{subfigure}{.48\textwidth}
@@ -217,7 +219,7 @@ One can evaluate $\hat{m_v}\left(f\right)$ and $\hat{m_a}\left(f\right)$ over th
 \end{subfigure}
 \caption{normalised damping/inertial force magnitude with stiffness proportional damping and triangular window}\label{fig:map_stiffness}
 \end{figure}
-In \figref{fig:map_constant}, the triangular window $L=10$ is chosen with a constant damping ratio $\zeta=\num{0.02}$. In \figref{fig:map_stiffness}, the triangular window $L=10$ is chosen with a stiffness proportional damping $a_1=\num{2e-4}$. In both examples, it is clearly seen that the undesired response at frequencies ranging from \SI{100}{\hertz} and \SI{1000}{\hertz} (that do not exist in the original signal, see \figref{fig:original}) is poorly attenuated. The magnitude of which is comparable to that of the original signal. Under certain circumstances (depending on the properties of the target system), numerical results of the corresponding analysis may be unreliable/unusable.
+In \figref{fig:map_constant}, the triangular window $L=10$ is chosen with a constant damping ratio $\zeta=\num{0.02}$. In \figref{fig:map_stiffness}, the triangular window $L=10$ is chosen with a stiffness proportional damping $a_1=\num{2e-4}$. In both examples, it is clearly seen that the undesired response at frequencies ranging from \SI{100}{\hertz} and \SI{1000}{\hertz} (that do not exist in the original signal, see \figref{fig:original}) is poorly attenuated, the magnitude of which is comparable to that of the original signal. Under certain circumstances (depending on the properties of the target system), numerical results of the corresponding analysis may be unreliable/unusable.
 
 Alternatively, the whole system can be deemed as a stochastic system, with components at imaging frequencies treated as errors, and analysed accordingly \citep[see, e.g.,][]{Soederstroem2002}.
 \subsection{A Preliminary Example}\label{sec:sdof_example}
@@ -233,9 +235,9 @@ For comparison, the external load is provided in both forms: 1) sampled at \SI{2
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/InterpolationExample}
-\caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using triangular widow and Newmark method with $\gamma=0.5$ and $\beta=0.25$}\label{fig:sdof_force}
+\caption{damping/inertial force history and spectrum of the SDOF system (transient solution included) using triangular window and Newmark method with $\gamma=0.5$ and $\beta=0.25$}\label{fig:sdof_force}
 \end{figure}
-The interpolated external load results in significant overshoots (around \SI{50}{\percent} for damping force and around \SI{500}{\percent} for inertial force) due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}, which are not attenuated by the linear interpolation. The values agree with \figref{fig:k_proportional_damping}.
+The interpolated external load contains relatively large imaging frequencies and results in significant overshoots (around \SI{50}{\percent} for damping force and around \SI{500}{\percent} for inertial force) due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}, which are not attenuated by the linear interpolation. The values agree with \figref{fig:k_proportional_damping}.
 
 Given that numerical models inevitably contain high frequency modes due to, for example, finite element discretisation, the presence of constraints implemented via the penalty function method, under-integrated mass matrix or even lumped mass matrix with zero diagonals, the contribution of high frequency to damping/inertial force can be amplified significantly. It must be emphasised that according to \eqsref{eq:general_damping_force}, as long as damping is considered, no matter which type, the maximum possible magnitude of damping force of a specific frequency equals to that of the upsampled (after filtering) input (external load in this case). Furthermore, it is also independent of the magnitude of damping, small or large. In fact, a large damping ratio gives flat $\hat{k_v}\left(f\right)$, which reduces the difference between low frequency response and high frequency response. It is thus less likely to overshoot regarding damping force (only). It can also be concluded that, as long as the damping model is not point--based (for example, the Wilson--Penzien model, which only responds to selected frequency points), the system is \textbf{not} immune from spurious damping force. It is also evident from analytical expressions that as long as $m$ is not zero, inertial force would be affected by this type of spurious response.
 
@@ -380,7 +382,7 @@ For $Lf_s=\SI{100}{\hertz}$, this gives \SI{-108}{\decibel}. For $Lf_s=\SI{500}{
 \subsubsection{Avoid Upsampling/Interpolation}
 The additional frequencies beyond the original Nyquist frequency stem from upsampling. If the input can be expressed analytically, such as modulated periodic signals that can be decomposed into simple sinusoids, it is recommended to compute its magnitude analytically. This, may not always be feasible though, would be completely free from imaging.
 \subsubsection{Better Interpolation}
-Generally speaking, low--pass FIR filters cannot retained the magnitudes of original samples unless they are carefully designed such that the filter length equals $2L-1$. This is not considered as an major issue as it is likely that the digital seismogram is already preprocessed via a band--pass filter.
+Generally speaking, low--pass FIR filters cannot retain the magnitudes of original samples unless they are carefully designed such that the filter length equals $2L-1$. This is not considered as a major issue as it is likely that the digital seismogram is already preprocessed via a band--pass filter.
 
 Alternatively, other interpolations can be used. \citet{Lee1989} discussed a number of methods of different orders. The cubic spline interpolation \citep[see][\S~3.5]{Burden2011} is another better alternative to the linear interpolation.
 \subsubsection{Time Integration with Algorithmic Damping}
