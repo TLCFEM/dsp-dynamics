@@ -1,6 +1,21 @@
 \section{Conclusions}
-In this work, we demonstrate and quantitatively analyse one type of spurious responses existing in both linear and non-linear dynamic analysis of vibrating systems that stems from linear interpolation of input load, which may be collected from sampling instruments such as actuators and seismometers. Within the scope of seismic engineering, typical values are chosen to illustrate the issue. It is worth emphasising that the identified issue is not applicable to systems in which the input is exact/accurate, but does exist in all other systems as long as linear interpolation is used, regardless of parameters (sampling frequency of input, material properties of system, natural frequency distribution, etc.).
+In this work, we demonstrate and analytically quantified one type of spurious responses existing in both linear and non-linear dynamic analysis of vibrating systems that stems from linear interpolation of input load, which may be collected from sampling instruments such as actuators and seismometers. Within the scope of seismic engineering, typical values are chosen to illustrate the issue. It is worth emphasising that the identified issue is not applicable to systems in which the input is exact/accurate, but does exist in all other systems as long as linear interpolation is used, regardless of parameters (sampling frequency of input, material properties of system, natural frequency distribution, etc.).
 
+Through a number of examples, it is evident that the linear interpolation is neither ideal or reliable. The following recommendations are made.
+\begin{enumerate}
+\item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, analysts shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval of ground motion and is determined by the property of the dynamic system of interest. Then, the seismogram shall be processed by upsampling. A low--pass filter with sufficiently small side lobe level shall be applied to suppress any components above the original Nyquist frequency.
+\item The high frequency noise exists intrinsically and can be isolated analytically. Algorithmic damping can alleviate the issue but only to a limited degree, nevertheless, it is still beneficial to adopt a time integration method with adjustable algorithmic damping. In this regard, the de facto Newmark method with average constant acceleration ($\gamma=0.5$ and $\beta=0.25$), which is widely used, is not recommended.
+\end{enumerate}
+
+Based on the above recommendations, the following workflow is proposed for conventional response history analysis, which is also summarised in \figref{fig:workflow}.
+\begin{enumerate}
+\item Determine whether the seismograph, in the form of either displacement or acceleration, is properly processed. Typical seismographs are preprocessed by applying a band--pass filter with bounds at around \SI{0.05}{\hertz} and \SIrange{25}{50}{\hertz} for structural analysis \citep[see, e.g.,][]{Houtte2017}.
+\item Determine a proper time step size and thus the corresponding upsampling ratio.
+\item Design a proper upsampling filter so that time step size matches upsampling interval.
+\item Avoid high frequency modes in the target structure. Constraints are better implemented via the Lagrange multiplier method.
+\item Perform analysis using filtered record and a time integration method with adjustable algorithmic damping.
+\item Examine final results to ensure there are no significant high frequency components.
+\end{enumerate}
 \begin{figure}[htb!]
 \centering\footnotesize
 \tikzstyle{label}=[rectangle,rounded corners,minimum width=3cm,minimum height=1cm,text centered,draw=black,fill=gray!10]
@@ -43,22 +58,6 @@ In this work, we demonstrate and quantitatively analyse one type of spurious res
 \end{tikzpicture}
 \caption{typical analysis flow with recommendations}\label{fig:workflow}
 \end{figure}
-
-Through a number of examples, it is evident that the linear interpolation is neither ideal or reliable. The following recommendations are made.
-\begin{enumerate}
-\item In order to avoid linear interpolation, it is better to have the identical time step size and sampling interval. To this end, analysts shall first choose a proper time step size that would be used in numerical analysis, typically it is smaller than sampling interval and is determined by the property of the dynamic system of interest. Then, the seismogram shall be processed by upsampling. A low--pass filter with sufficiently small side lobe level shall be applied to suppress any components above the original Nyquist frequency.
-\item The high frequency noise exists intrinsically and can be spotted analytically. Algorithmic damping can alleviate the issue but only to a limited degree, nevertheless, it is still beneficial to adopt a time integration method with adjustable algorithmic damping. In this regard, the de facto Newmark method with average constant acceleration ($\gamma=0.5$ and $\beta=0.25$), which is widely used, is not recommended.
-\end{enumerate}
-
-Based on the above recommendations, the following workflow is proposed for conventional response history analysis, which is also summarised in \figref{fig:workflow}.
-\begin{enumerate}
-\item Determine whether the seismograph, in the form of either displacement or acceleration, is properly processed. Typical seismographs are preprocessed by applying a band--pass filter with bounds at around \SI{0.05}{\hertz} and \SIrange{25}{50}{\hertz} for structural analysis \citep[see, e.g.,][]{Houtte2017}.
-\item Determine a proper time step size and thus the corresponding upsampling ratio.
-\item Design a proper upsampling filter so that time step size matches upsampling interval.
-\item Avoid high frequency modes in the target structure. Constraints are better implemented via the Lagrange multiplier method.
-\item Perform analysis using filtered record and a time integration method with adjustable algorithmic damping.
-\item Examine final results to ensure there are no significant high frequency components.
-\end{enumerate}
 
 For software vendors, in addition to the de facto linear interpolation, extra options shall be provided when it comes to processing tabular data. Unless the desired load can be accurately represented in a tabular form, in absence of an explicitly defined processing of input load, a default upsampling procedure with proper filter parameters can be applied.
 
