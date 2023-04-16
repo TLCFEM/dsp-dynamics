@@ -24,11 +24,11 @@ Based on the above recommendations, the following workflow is proposed for conve
 \pgfdeclarelayer{background layer}
 \pgfsetlayers{background layer,main}
 \definecolor{RoyalBlue}{rgb}{0,.443,.737}
-\node(original)[label]{Original Load Record};
-\node(extended)[label,below of=original,yshift=-1cm]{Extend (Zero--stuffed)};
-\node(filter)[label,below of=extended,yshift=-1cm]{Low--pass Filter};
-\node(oscillator)[label,below of=filter,yshift=-1cm]{Dynamic System};
-\node(system)[label,below of=oscillator,yshift=-1cm]{Numerical Result};
+\node(original)[label]{original load record};
+\node(extended)[label,below of=original,yshift=-1cm]{extend (zero--stuffed)};
+\node(filter)[label,below of=extended,yshift=-1cm]{low--pass filter};
+\node(oscillator)[label,below of=filter,yshift=-1cm]{dynamic system};
+\node(system)[label,below of=oscillator,yshift=-1cm]{numerical result};
 \draw[->](original)--(extended);
 \draw[->](extended)--(filter);
 \draw[->](filter)--(oscillator);
