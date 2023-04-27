@@ -428,7 +428,7 @@ Based on the above discussions, a revised workflow for response history analysis
 \node(extended)[label,below of=original,yshift=-1cm]{extend (zero--stuffed)};
 \node(filter)[label,below of=extended,yshift=-1cm]{low--pass filter};
 \node(oscillator)[label,below of=filter,yshift=-1cm]{dynamic system};
-\node(system)[label,below of=oscillator,yshift=-1cm]{numerical result};
+\node(system)[label,below of=oscillator,yshift=-1cm]{numerical results};
 \draw[->](original)--(extended);
 \draw[->](extended)--(filter);
 \draw[->](filter)--(oscillator);
@@ -437,12 +437,12 @@ Based on the above discussions, a revised workflow for response history analysis
 \node[xshift=4cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
 \node[xshift=4cm,right of=filter,align=center]{design a filter, for FIR,\\using a proper window\\with desired attributes};
 \node[xshift=4cm,right of=oscillator,align=center]{proper time integration\\method with proper\\algorithmic damping};
-\node(dft)[xshift=4cm,right of=system,align=center]{examine frequency\\components via DFT};
+\node(dft)[xshift=4cm,right of=system,align=center]{examine frequency\\components via DFT\\further examine forces};
 \node(p)[exp,xshift=-6cm,right of=original,align=center]{$\hat{p}$};
 \node(pe)[exp,xshift=-6cm,right of=extended,align=center]{$\hat{p_e}$};
 \node(g)[exp,xshift=-6cm,right of=filter,align=center]{$\hat{g}\cdot\hat{p_e}$};
 \node(h)[exp,xshift=-6cm,right of=oscillator,align=center]{$\hat{h}\cdot\hat{g}\cdot\hat{p_e}$};
-\node(f)[exp,xshift=-6cm,right of=system,align=center]{$\hat{F_u}$, $\hat{F_v}$, $\hat{F_a}$};
+\node(f)[exp,xshift=-6cm,right of=system,align=center]{$\hat{u}$, $\hat{v}$, $\hat{a}$};
 \draw[->](p)--(pe)node[midway,fill=RoyalBlue!20]{$[\uparrow{}L]$};
 \draw[->](pe)--(g)node[midway,fill=RoyalBlue!20]{$\times\hat{g}$};
 \draw[->](g)--(h)node[midway,fill=RoyalBlue!20]{$\times\hat{h}$};
@@ -451,6 +451,7 @@ Based on the above discussions, a revised workflow for response history analysis
 \node(note)[xshift=4cm,right of=procedure]{notes};
 \node(freq)[xshift=-6cm,right of=procedure]{frequency domain};
 \begin{pgfonlayer}{background layer}
+\fill[yellow!20,draw=black,rounded corners=1mm]($(freq)+(-2.5,.75)$)rectangle($(dft)+(2.75,-1.25)$);
 \fill[RoyalBlue!20,draw=black,rounded corners=1mm]($(freq)+(-2,.5)$)rectangle($(f)+(2,-1)$);
 \fill[RoyalBlue!20,draw=black,rounded corners=1mm]($(procedure)+(-2,.5)$)rectangle($(system)+(2,-1)$);
 \fill[RoyalBlue!20,draw=black,rounded corners=1mm]($(note)+(-2.25,.5)$)rectangle($(dft)+(2.25,-1)$);
