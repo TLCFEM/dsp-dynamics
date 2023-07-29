@@ -235,7 +235,7 @@ def plot_window(win_type: str = 'tri'):
     o_time, o_sine_wave = get_waveform(int(duration * sampling_f))
     up_time, up_sine_wave = zero_stuff(o_time, o_sine_wave, ratio)
 
-    markerline, stemline, baseline = plt.stem(o_time, o_sine_wave, markerfmt='ro', linefmt='--')
+    markerline, stemline, baseline = plt.stem(o_time, o_sine_wave, markerfmt='ro', linefmt='-')
     plt.setp(stemline, linewidth=0)
     plt.setp(markerline, markersize=2)
     plt.setp(stemline, color='#377eb8')
