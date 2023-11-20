@@ -3,7 +3,7 @@ import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 
-from DFT.FundamentalSolution import get_line_style
+from FundamentalSolution import get_line_style
 
 matplotlib.rcParams.update({'font.size': 6})
 
