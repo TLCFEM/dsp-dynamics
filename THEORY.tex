@@ -252,6 +252,13 @@ The damping/inertial force history and its frequency components are shown in \fi
 \end{figure}
 The interpolated external load contains relatively large imaging frequencies and results in significant overshoots (around \SI{50}{\percent} for damping force and around \SI{500}{\percent} for inertial force) due to significant components at \SI{175}{\hertz} and \SI{225}{\hertz}, which are not attenuated by the linear interpolation. The values agree with \figref{fig:k_proportional_damping}.
 
+\add{It must be re-emphasised that, as stated in the previous remarks, the identified spurious response stems from the input, instead of the numerical time integration. Thus, it can be analytically isolated. As a result, no matter how `good' the adopted time integration method is, the spurious response can always be observed. \figref{fig:sdof_various} shows the inertial force history and spectrum using various time integration algorithms. It can be seen that all methods show spikes at imaging frequencies.
+\begin{figure}[htb!]
+\centering
+\includegraphics{PIC/VARIOUS.ALGO}
+\caption{inertial force history and spectrum of the SDOF system (transient solution included) using interpolated external load and various time integration methods}\label{fig:sdof_various}
+\end{figure}}
+
 Given that numerical models inevitably contain high frequency modes due to, for example, finite element discretisation, the presence of constraints implemented via the penalty function method, under-integrated mass matrix or even lumped mass matrix with zero diagonals, the contribution of high frequency to damping/inertial force can be amplified significantly. It must be emphasised that according to \eqsref{eq:general_damping_force}, as long as damping is considered, no matter which type, the maximum possible magnitude of damping force of a specific frequency equals that of the upsampled (after filtering) external load. Furthermore, it is also independent of the magnitude of damping, small or large. In fact, a large damping ratio gives flat $\hat{k_v}\left(f\right)$, which reduces the difference between low frequency response and high frequency response. It is thus less likely to overshoot regarding damping force (only). It can also be concluded that, as long as the damping model is not point--based (for example, the Wilson--Penzien model, which only responds to selected frequency points), the system is \textbf{not} immune from a spurious damping force. It is also evident from analytical expressions that as long as $m$ is not zero, the inertial force would be affected by this type of spurious response.
 
 In the case of multiple degrees of freedom (MDOF) systems, depending on the distribution of natural frequencies and the components of the external load, as well as the upsampling ratio, higher modes may produce significant responses due to, for example, being closer to imaging frequencies. The final numerical results may contain a considerably large portion of spurious responses.
@@ -398,7 +405,7 @@ The additional frequencies beyond the original Nyquist frequency stem from upsam
 Generally speaking, low--pass FIR filters cannot retain the exact magnitudes of the original samples. This is not considered as a major issue as it is likely that the digital seismogram is already preprocessed via a band--pass filter.
 
 Alternatively, other interpolations can be used. \citet{Lee1989} discussed a number of methods of different orders. The cubic spline interpolation \citep[see][\S~3.5]{Burden2011} is another better alternative to the linear interpolation.
-\subsubsection{Time Integration with Algorithmic Damping}
+\subsubsection{Time Integration with Algorithmic Damping}\label{sec:algo_damping}
 It is widely accepted by the community that the presence of algorithmic damping (with proper amount properly distributed) is beneficial.
 
 For a specific time integration method, one can derive the corresponding numerical transfer function that approximates the theoretical one \eqsref{eq:analytical_transfer}. \citet{Preumont1982} presented an analysis of several time integration methods in the frequency domain and derived the corresponding transfer functions. \citet{AriasTrujillo2012} carried out similar research and benchmarked a number of different time integration algorithms. Relevant methodology is directly adopted in this work. One can plot the ratio between numerical and analytical transfer functions.% By choosing $\gamma>\num{0.5}$, algorithmic damping can be introduced.
@@ -477,8 +484,8 @@ To close this section, we present a practical example of a cantilever wall under
 \begin{axis}[
 width=8cm,height=5cm,
 axis lines=middle,
-xmin=10,
-xmax=60,
+xmin=20,
+xmax=50,
 ymin=-1,
 ymax=1,
 xlabel=time (s),
