@@ -26,7 +26,8 @@ def process_result():
             plt.plot(data[:, 0], data[:, 1], linewidth=1, linestyle=next(LS))
 
     plt.grid(True, which='both')
-    plt.legend(['Newmark', r'Bathe two-step, $\rho_\infty=0.5$', r'GSSSS optimal, $\rho_\infty=0.5$'], loc='upper right')
+    plt.legend([r'Newmark, $\gamma=0.5$, $\beta=0.25$', r'Bathe two-step, $\rho_\infty=0.5$',
+                r'GSSSS optimal, $\rho_\infty=0.5$'], loc='upper right')
 
     fig.add_subplot(212)
     plt.title('frequency response of inertial force of the SDOF system')
@@ -44,7 +45,8 @@ def process_result():
             plt.xlim([0, np.max(o_freq)])
 
     plt.grid(True, which='both')
-    plt.legend(['Newmark', r'Bathe two-step, $\rho_\infty=0.5$', r'GSSSS optimal, $\rho_\infty=0.5$'], loc='upper right')
+    plt.legend([r'Newmark, $\gamma=0.5$, $\beta=0.25$', r'Bathe two-step, $\rho_\infty=0.5$',
+                r'GSSSS optimal, $\rho_\infty=0.5$'], loc='upper right')
 
     fig.tight_layout()
 
