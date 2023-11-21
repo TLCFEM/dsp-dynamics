@@ -45,7 +45,7 @@ def process_result(node):
     plt.title(f'inertial force history of node {node}')
     plt.xlabel('Time (s)')
     plt.ylabel(r'Inertial Force $F_a$')
-    plt.xlim([24, 34])
+    plt.xlim([27, 30])
 
     name = 'R3-IF'
     dof = 2

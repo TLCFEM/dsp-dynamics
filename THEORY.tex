@@ -1,7 +1,7 @@
 \section{Analytical Quantitation of Spurious Response}
 In this work, a continuous--time signal or function is denoted by lowercase letters, for example, $u\left(t\right)$. It's duality in the frequency domain (via Fourier transform) is denoted with an overhead hat, for example, $\hat{u}\left(\omega\right)$ or $\hat{u}\left(f\right)$. A discrete--time signal is denoted by square brackets, for example, $u[n]$. The counterpart in the frequency domain (via the discrete Fourier transform) is denoted by the uppercase letter, for example, $U[n]$. It can alternatively be approximated by sampling $\hat{u}\left(\omega\right)$ or $\hat{u}\left(f\right)$. The conversion between angular frequency $w$ and frequency $f$ is done implicitly.
 \subsection{Linear Interpolation}
-For ease of discussion, let the sampling interval of an input seismogram be the multiple of time step size and let the ratio between them be an integer $L$. To apply the seismogram as an external load within each time step, interpolation is required, it is then equivalent to upsample the input seismogram by the same ratio $L$. If the sampling rate/frequency of the original seismogram is $f_s$, then the upsampled signal has a sampling rate of $Lf_s$. Extra attention shall be paid to the original Nyquist frequency $f_s/2$ since anything above it cannot be reliably reconstructed, due to, for example, aliasing. For a discrete--time signal $p[n]$, a typical upsampling operation with the upsampling factor $L$ consists of two steps \citep{Oppenheim2010}:
+For the ease of discussion, let the sampling interval of an input seismogram be the multiple of time step size and let the ratio between them be an integer $L$. To apply the seismogram as an external load within each time step, interpolation is required, it is then equivalent to upsample the input seismogram by the same ratio $L$. If the sampling rate/frequency of the original seismogram is $f_s$, then the upsampled signal has a sampling rate of $Lf_s$. Extra attention shall be paid to the original Nyquist frequency $f_s/2$ since anything above it cannot be reliably reconstructed, due to, for example, aliasing. For a discrete--time signal $p[n]$, a typical upsampling operation with the upsampling factor $L$ consists of two steps \citep{Oppenheim2010}:
 \begin{enumerate}
 \item Insert $L-1$ zeros between each pair of adjacent samples in $p[n]$, resulting in a new signal $p_e[n]$ which can be formally defined as
 \begin{gather}
@@ -31,7 +31,7 @@ The bare $p_e[n]$ without applying any filter(s) contains spectral images, that 
 \begin{gather}
 u(t)=\sin\left(2\pi{}f_0t\right),
 \end{gather}
-with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}, a typical lower bound of processed seismograms. Assume this continuous--time signal is sampled at a rate of $f_s=\SI{200}{\hertz}$, the discrete--time signal $p[n]$ can be depicted in \figref{fig:original}.
+with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}, a typical lower bound of processed seismograms. Assume this continuous--time signal is sampled at a rate of $f_s=\SI{200}{\hertz}$, the discrete--time signal $u[n]$ can be depicted in \figref{fig:original}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/PureSineOrigin}
@@ -39,13 +39,13 @@ with the frequency $f_0=\dfrac{\omega_0}{2\pi}$ chosen to be \SI{25}{\hertz}, a 
 \end{figure}
 The corresponding Nyquist frequency is $f_s/2=\SI{100}{\hertz}$, thus, the frequency ranges from \SI{-100}{\hertz} to \SI{100}{\hertz} (negative part not shown with amplitude of positive part properly scaled).
 
-By choosing an upsampling factor $L=10$, the extended signal $p_e[n]$ (zero--stuffed/padded) can be illustrated as in \figref{fig:extended}.
+By choosing an upsampling factor $L=10$, the extended signal $u_e[n]$ (zero--stuffed/padded) can be illustrated as in \figref{fig:extended}.
 \begin{figure}[htb!]
 \centering
 \includegraphics{PIC/PureSineExtended}
 \caption{zero--stuffed sine wave in time domain and frequency domain}\label{fig:extended}
 \end{figure}
-The Nyquist frequency of $p_e[n]$ is $10\times\SI{100}{\hertz}=\SI{1000}{\hertz}$, the original component at $\SI{25}{\hertz}$ is mirrored to \SI[separate-uncertainty=true]{200\pm25}{\hertz}, \SI[separate-uncertainty=true]{400\pm25}{\hertz}, \SI[separate-uncertainty=true]{600\pm25}{\hertz}, \SI[separate-uncertainty=true]{800\pm25}{\hertz} and \SI{975}{\hertz}. Those additional components are known as images.
+The Nyquist frequency of $u_e[n]$ is $10\times\SI{100}{\hertz}=\SI{1000}{\hertz}$, the original component at $\SI{25}{\hertz}$ is mirrored to \SI[separate-uncertainty=true]{200\pm25}{\hertz}, \SI[separate-uncertainty=true]{400\pm25}{\hertz}, \SI[separate-uncertainty=true]{600\pm25}{\hertz}, \SI[separate-uncertainty=true]{800\pm25}{\hertz} and \SI{975}{\hertz}. Those additional components are known as images.
 
 The linear interpolation (triangular window) for $L=10$ can be constructed as
 \begin{gather}
@@ -70,7 +70,7 @@ By the convolution theorem, the upsampled signal can be obtained by either convo
 \includegraphics{PIC/Convolution}
 \caption{interpolated sine wave in time domain and frequency domain}\label{fig:interpolated}
 \end{figure}
-\figref{fig:interpolated} shows the interpolated signal in both domains. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe, see \figref{fig:tri_window}) of the triangular window, the spectral images in $p_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, for example, the component at \SI{175}{\hertz} is reduced to \num{1.99e-2}, but their magnitudes are still relatively large. Using such an interpolated signal as the external load in dynamic analyses can sometimes cause significant spurious force responses, which are derived analytically in the following.
+\figref{fig:interpolated} shows the interpolated signal in both domains. Due to the high side lobe level (around \SI{-26}{\decibel} of the first side lobe, see \figref{fig:tri_window}) of the triangular window, the spectral images in $u_i[n]$ between \SI{100}{\hertz} and \SI{1000}{\hertz} are seemingly attenuated, for example, the component at \SI{175}{\hertz} is reduced to \num{1.99e-2}, but their magnitudes are still relatively large. Using such an interpolated signal as the external load in dynamic analyses can sometimes cause significant spurious force responses, which are derived analytically in the following.
 \subsection{Oscillator System}
 To investigate how the partially attenuated images would affect the response of oscillator systems, consider a single degree of freedom mass--spring--dashpot linear system under a harmonic load. The equation of motion can be written as
 \begin{gather}
@@ -147,7 +147,7 @@ It can be noticed that all three expressions of $\hat{k_v}\left(\omega\right)$ p
 \begin{gather}\label{eq:general_damping_force}
 \hat{k_v}\left(\omega\right)=\dfrac{iA}{B+iA}.
 \end{gather}
-Note that $B=0$ when $\omega=\omega_n$, therefore, $\hat{k_v}\left(\omega_n\right)\equiv1$, which is the maximum magnitude of $\hat{k_v}\left(\omega\right)$. At this point, the magnitude of the damping force component simply equals that of the external load component, see \eqsref{eq:damping_force_spec}. With that said, although the damping ratio either decays to zero asymptotically (mass proportional) or grows to infinity (stiffness proportional), the corresponding damping force is bounded, the maximum of which depends on the magnitude of the external load at the target frequency.
+Note that $B=0$ when $\omega=\omega_n$, correspondingly, $\hat{k_v}\left(\omega_n\right)=1$, which is the maximum magnitude of $\hat{k_v}\left(\omega\right)$. At this point, the magnitude of the damping force component simply equals that of the external load component, see \eqsref{eq:damping_force_spec}. With that said, although the damping ratio either decays to zero asymptotically (mass proportional) or grows to infinity (stiffness proportional), the corresponding damping force is bounded, the maximum of which depends on the magnitude of the external load at the target frequency.
 
 \begin{figure}[htb!]
 \centering
@@ -259,7 +259,7 @@ The interpolated external load contains relatively large imaging frequencies and
 \caption{inertial force history and spectrum of the SDOF system (transient solution included) using interpolated external load and various time integration methods}\label{fig:sdof_various}
 \end{figure}}
 
-Given that numerical models inevitably contain high frequency modes due to, for example, finite element discretisation, the presence of constraints implemented via the penalty function method, under-integrated mass matrix or even lumped mass matrix with zero diagonals, the contribution of high frequency to damping/inertial force can be amplified significantly. It must be emphasised that according to \eqsref{eq:general_damping_force}, as long as damping is considered, no matter which type, the maximum possible magnitude of damping force of a specific frequency equals that of the upsampled (after filtering) external load. Furthermore, it is also independent of the magnitude of damping, small or large. In fact, a large damping ratio gives flat $\hat{k_v}\left(f\right)$, which reduces the difference between low frequency response and high frequency response. It is thus less likely to overshoot regarding damping force (only). It can also be concluded that, as long as the damping model is not point--based (for example, the Wilson--Penzien model, which only responds to selected frequency points), the system is \textbf{not} immune from a spurious damping force. It is also evident from analytical expressions that as long as $m$ is not zero, the inertial force would be affected by this type of spurious response.
+Given that numerical models inevitably contain high frequency modes due to, for example, finite element discretisation, the presence of constraints implemented via the penalty function method, the contribution of high frequency to damping/inertial force can be amplified significantly. It must be emphasised that according to \eqsref{eq:general_damping_force}, as long as damping is considered, no matter which type, the maximum possible magnitude of damping force of a specific frequency is equal to that of the upsampled (after filtering) external load. Furthermore, it is also independent of the magnitude of damping, small or large. In fact, a large damping ratio gives flat $\hat{k_v}\left(f\right)$, which reduces the difference between low frequency response and high frequency response. It is thus less likely to overshoot regarding damping force (only). It can also be concluded that, as long as the damping model is not point--based (for example, the Wilson--Penzien model, which only responds to selected frequency points), the system is \textbf{not} immune from spurious damping forces. It is also evident from analytical expressions that as long as $m$ is not zero, the inertial force would be affected by this type of spurious response.
 
 In the case of multiple degrees of freedom (MDOF) systems, depending on the distribution of natural frequencies and the components of the external load, as well as the upsampling ratio, higher modes may produce significant responses due to, for example, being closer to imaging frequencies. The final numerical results may contain a considerably large portion of spurious responses.
 \subsection{A Note On Load Applied As Displacement}
@@ -442,8 +442,8 @@ Based on the above discussions, a revised workflow for response history analysis
 \draw[->](oscillator)--(system);
 \node[xshift=4cm,right of=original,align=center]{either processed\\or unprocessed};
 \node[xshift=4cm,right of=extended,align=center]{determine upsampling factor\\by system properties and\\original sampling rate};
-\node[xshift=4cm,right of=filter,align=center]{design a filter, for FIR,\\using a proper window\\with desired attributes};
-\node[xshift=4cm,right of=oscillator,align=center]{proper time integration\\method with proper\\algorithmic damping};
+\node[xshift=4cm,right of=filter,align=center]{design a filter for FIR\\using a proper window\\with desired attributes};
+\node[xshift=4cm,right of=oscillator,align=center]{proper time integration\\method with potential\\algorithmic damping};
 \node(dft)[xshift=4cm,right of=system,align=center]{examine frequency\\components via DFT\\further examine forces};
 \node(p)[exp,xshift=-6cm,right of=original,align=center]{$\hat{p}$};
 \node(pe)[exp,xshift=-6cm,right of=extended,align=center]{$\hat{p_e}$};
@@ -476,8 +476,8 @@ Based on the above discussions, a revised workflow for response history analysis
 \figref{fig:nuttall_example} presents the results of the same SDOF system described in \secref{sec:sdof_example} but with the Blackman--Nuttall window (see \figref{fig:nuttall_window}) and the generalised-$\alpha$ time integration method, while all other configurations remain unchanged.
 
 It is evident that with better attenuations at imaging frequencies, the quality of numerical results can be greatly improved, which allows more accurate and confident interpretation.
-\subsection{A Practical Example}
-To close this section, we present a practical example of a cantilever wall under seismic load. The model is depicted in \figref{fig:cantilever_model}.
+\subsection{A Cantilever Wall}
+We present one more example of a cantilever wall under seismic load. The model and the corresponding configurations are depicted in \figref{fig:cantilever_model}.
 \begin{figure}[htb!]
 \centering\footnotesize
 \begin{tikzpicture}

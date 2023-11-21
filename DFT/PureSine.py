@@ -143,7 +143,7 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     fig.add_subplot(211)
-    add_stem(rf'original sine wave $p[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', o_time, o_sine_wave,
+    add_stem(rf'original sine wave $u[n]$ with $f={natural_f}$ Hz and $f_s={sampling_f}$ Hz', o_time, o_sine_wave,
              'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
@@ -158,7 +158,7 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     fig.add_subplot(211)
-    add_stem(rf'extended sine wave $p_e[n]$ with $L={ratio}$', up_time, up_sine_wave, 'Time (s)', 'Amplitude')
+    add_stem(rf'extended sine wave $u_e[n]$ with $L={ratio}$', up_time, up_sine_wave, 'Time (s)', 'Amplitude')
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
@@ -187,7 +187,7 @@ def perform_computation():
     fig = plt.figure(figsize=(6, 3), dpi=200)
 
     fig.add_subplot(211)
-    add_stem(rf'convolution/interpolation $p_i[n]$', up_time, conv, 'Time (s)', 'Amplitude', True)
+    add_stem(rf'convolution/interpolation $u_i[n]$', up_time, conv, 'Time (s)', 'Amplitude', True)
     plt.xlim(xlim_time)
     plt.ylim(ylim_time)
 
