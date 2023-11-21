@@ -12,7 +12,7 @@ Based on the above recommendations, the following workflow is proposed for conve
 \item Determine whether the seismograph, in the form of either displacement or acceleration, is properly processed. Typical seismographs are preprocessed by applying a band--pass filter with bounds at around \SI{0.05}{\hertz} and \SIrange{25}{50}{\hertz} for structural analysis \citep[see, e.g.,][]{Houtte2017}.
 \item Determine a proper time step size and thus the corresponding upsampling ratio.
 \item Design a proper upsampling filter so that the time step size matches the upsampling interval.
-\item Avoid high frequency modes in the target structure. Constraints are better implemented via the Lagrange multiplier method.
+\item Avoid high frequency modes in the target structure. Constraints can be better implemented via the Lagrange multiplier method.
 \item Perform analysis using filtered records and a time integration method with adjustable algorithmic damping.
 \item Examine the final results to ensure there are no significant high frequency components.
 \end{enumerate}
