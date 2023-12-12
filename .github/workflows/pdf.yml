@@ -27,8 +27,9 @@ jobs:
           python SDOF.py
           cd ..
       - name: Compile
-        uses: xu-cheng/texlive-action/full@v2
+        uses: xu-cheng/texlive-action@v2
         with:
+          scheme: full
           run: |
             latexmk -pdf DYNDSP.tex
       - name: Release
