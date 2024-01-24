@@ -98,7 +98,7 @@ def generate_figure(gamma, dt=1 / 2000):
     plt.ylim(max(min_y, 1e-2), max_y)
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/Newmark-{gamma}-{dt * 1000}.pdf', format='pdf')
+        fig.savefig(f'../PIC/Newmark_{int(gamma * 10)}_{int(dt * 10000)}.pdf', format='pdf')
         plt.close()
     else:
         plt.show()

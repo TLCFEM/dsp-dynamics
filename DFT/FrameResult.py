@@ -85,7 +85,7 @@ def process_result(node):
     fig.tight_layout()
 
     if __SAVE__:
-        fig.savefig(f'../PIC/FrameExample-{node}.pdf', format='pdf')
+        fig.savefig(f'../PIC/FrameExample_{node}.pdf', format='pdf')
         plt.close()
     else:
         plt.show()

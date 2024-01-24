@@ -74,7 +74,7 @@ def plot(damping_type, a, freq_n: float, win_type: str = 'tri'):
     plt.grid(True)
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}-{int(1e5 * a)}.pdf', format='pdf')
+        fig.savefig(f'../PIC/{damping_type}DampingForce{int(freq_n)}_{int(1e5 * a)}.pdf', format='pdf')
         plt.close()
     else:
         plt.show()
@@ -111,7 +111,7 @@ def surface(damping_type, a, win_type: str = 'tri'):
     plt.gca().set_aspect('equal')
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}-{int(1e5 * a)}.pdf', format='pdf')
+        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}_{int(1e5 * a)}.pdf', format='pdf')
         plt.close()
     else:
         plt.title(rf'{damping_type.lower()} damping {win_type} window')
@@ -249,7 +249,7 @@ def plot_window(win_type: str = 'tri'):
 
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/Window-{win_type.capitalize()}.pdf', format='pdf')
+        fig.savefig(f'../PIC/Window_{win_type.capitalize()}.pdf', format='pdf')
         plt.close()
     else:
         plt.title(rf'{__normalised_name[win_type]} window function')

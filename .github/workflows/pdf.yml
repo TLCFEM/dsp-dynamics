@@ -15,14 +15,14 @@ jobs:
           pip install -r requirements.txt
           mkdir PIC
           cd DFT
-          python PureSine.py
-          python FundamentalSolution.py
           python DampingForce.py
+          python Deformation.py
+          python FrameResult.py
+          python FundamentalSolution.py
           python InertialForce.py
           python Newmark.py
           python Nuttall.py
-          python FrameResult.py
-          python Deformation.py
+          python PureSine.py
           python SDOF.py
           cd ..
       - name: Compile

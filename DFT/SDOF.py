@@ -51,7 +51,7 @@ def process_result():
     fig.tight_layout()
 
     if __SAVE__:
-        fig.savefig(f'../PIC/VARIOUS.ALGO.pdf', format='pdf')
+        fig.savefig(f'../PIC/VARIOUS_ALGO.pdf', format='pdf')
         plt.close()
     else:
         plt.show()

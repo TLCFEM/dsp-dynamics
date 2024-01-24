@@ -99,7 +99,7 @@ def process_result():
     fig.tight_layout()
 
     if __SAVE__:
-        fig.savefig(f'../PIC/Nuttall.Example.pdf', format='pdf')
+        fig.savefig(f'../PIC/Nuttall_Example.pdf', format='pdf')
         plt.close()
     else:
         plt.show()

@@ -32,7 +32,7 @@ def generate_figure(gamma):
     plt.legend()
 
     fig.tight_layout()
-    fig.savefig(f'../PIC/Deformation.TF.pdf', format='pdf')
+    fig.savefig(f'../PIC/Deformation_TF.pdf', format='pdf')
 
 
 if __name__ == '__main__':

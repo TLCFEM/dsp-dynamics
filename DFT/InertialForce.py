@@ -47,7 +47,7 @@ def surface(damping_type, a, win_type: str = 'tri'):
     plt.gca().set_aspect('equal')
     fig.tight_layout()
     if __SAVE__:
-        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}-{int(1e5 * a)}.pdf', format='pdf')
+        fig.savefig(f'../PIC/{damping_type}Map{win_type.capitalize()}_{int(1e5 * a)}.pdf', format='pdf')
         plt.close()
     else:
         plt.title(rf'inertial force with {win_type} window')
