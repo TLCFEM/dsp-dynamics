@@ -1,0 +1,86 @@
+\documentclass[3p,sort&compress,11pt,fleqn,review]{elsarticle}
+\bibliographystyle{elsarticle-num-names}
+\usepackage{amsmath,amsfonts,amssymb,siunitx,float,subcaption,setspace,booktabs,diagbox,bm,tikz,structmech,mathtools,tikz-3dplot,pgfplots,url,mathrsfs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{lineno}
+%\usepackage{easyReview}
+\usetikzlibrary{shapes.geometric,backgrounds}
+\pgfplotsset{compat=1.8}
+\journal{}
+\newcommand*{\add}[1]{#1}
+\newcommand*{\mb}[1]{\bm{#1}}
+\newcommand*{\mT}{\mathrm{T}}
+\newcommand*{\md}[1]{\mathrm{d}#1}
+\newcommand*{\mdd}[1]{\mathrm{d}^2#1}
+\newcommand*{\eqsref}[1]{Eq.~(\ref{#1})}
+\newcommand*{\figref}[1]{Fig.~\ref{#1}}
+\newcommand*{\tabref}[1]{Table~\ref{#1}}
+\newcommand*{\algoref}[1]{Algorithm~\ref{#1}}
+\newcommand*{\secref}[1]{\S~\ref{#1}}
+\newcommand*{\diag}[1]{\text{diag}\left(#1\right)}
+\newcommand*{\sign}[1]{\text{sign}\left(#1\right)}
+\newcommand*{\dev}[1]{\text{dev}\left(#1\right)}
+\newcommand*{\tr}[1]{\text{trace}\left(#1\right)}
+\newcommand*{\ddfrac}[2]{\dfrac{\md{#1}}{\md{#2}}}
+\newcommand*{\pdfrac}[2]{\dfrac{\partial{#1}}{\partial{#2}}}
+\newcommand{\bsigma}{\mb{\sigma}}
+\newcommand{\bvarepsilon}{\mb{\varepsilon}}
+\newcommand{\beeta}{\mb{\eta}}
+\newcommand{\bn}{\mb{n}}
+\newcommand{\balpha}{\mb{\alpha}}
+\newcommand{\bbeta}{\mb{\beta}}
+\newcommand{\bgamma}{\mb{\gamma}}
+\newcommand{\bq}{\mb{q}}
+\newcommand{\bs}{\mb{s}}
+\newcommand{\bc}{\mb{c}}
+\newcommand{\be}{\mb{e}}
+\newcommand{\bv}{\mb{v}}
+\DeclarePairedDelimiter\abs{\lvert}{\rvert}
+\DeclarePairedDelimiter\norm{\lVert}{\rVert}
+\makeatletter
+\let\oldabs\abs
+\def\abs{\@ifstar{\oldabs}{\oldabs*}}
+\let\oldnorm\norm
+\def\norm{\@ifstar{\oldnorm}{\oldnorm*}}
+\newenvironment{breakablealgorithm}
+{\begin{center}
+\refstepcounter{algorithm}
+\hrule height.8pt depth0pt \kern2pt
+\renewcommand{\caption}[2][\relax]{
+{\raggedright\textbf{\ALG@name~\thealgorithm} ##2\par}
+\ifx\relax##1\relax
+\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##2}
+\else
+\addcontentsline{loa}{algorithm}{\protect\numberline{\thealgorithm}##1}
+\fi
+\kern2pt\hrule\kern2pt
+}}{\kern2pt\hrule\relax
+\end{center}}
+\begin{document}
+\linenumbers
+\begin{abstract}
+\begin{linenumbers}
+This study focuses on the analytical identification and quantification of one type of spurious responses in the context of response history analysis. The spurious response is caused by linear interpolation of input loads. Through analytical derivation and numerical simulations, it is shown that the identified spurious response is fully caused by interpolation and can significantly affect both damping and inertial forces. Furthermore, the spurious response is not bounded, thus, resistance-based designs could potentially be non-conservative. The findings are applicable to (non-)linear MDOF systems. To address this issue and improve the quality of numerical results, remedies and recommendations are proposed.
+\end{linenumbers}
+\end{abstract}
+\begin{keyword}
+response history analysis\sep
+spurious structural response\sep
+time integration\sep
+digital signal processing\sep
+dynamics
+\end{keyword}
+\begin{frontmatter}
+\title{Spurious Response Due to Linear Interpolation of Input Load and Some Remedies}
+\author[add1]{Theodore~L.~Chang\corref{tlc}}\ead{tlcfem@gmail.com}
+\author[add2]{Chin-Long~Lee}
+\cortext[tlc]{corresponding author}
+\address[add1]{IRIS Adlershof, Humboldt-Universität zu Berlin, Berlin, Germany, 12489.}
+\address[add2]{Department of Civil and Natural Resources Engineering, University of Canterbury, Christchurch, New Zealand, 8041.}
+\end{frontmatter}
+\input{INTRO}
+\input{THEORY}
+\input{CONCLUSION}
+\bibliography{BIB}
+\end{document}

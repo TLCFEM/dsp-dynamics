@@ -1,0 +1,41 @@
+name: PDF
+on: [push]
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          mkdir PIC
+          cd DFT
+          python DampingForce.py
+          python Deformation.py
+          python FrameResult.py
+          python FundamentalSolution.py
+          python InertialForce.py
+          python Newmark.py
+          python Nuttall.py
+          python PureSine.py
+          python SDOF.py
+          cd ..
+      - name: Compile
+        uses: xu-cheng/texlive-action@v2
+        with:
+          scheme: full
+          run: |
+            latexmk -pdf DYNDSP.tex
+      - name: Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: DYNDSP.pdf
+          asset_name: DYNDSP.pdf
+          tag: latest
+          overwrite: true
