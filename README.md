@@ -1,6 +1,6 @@
 # Spurious Response Due to Linear Interpolation of Input Load and Some Remedies
 
-This repository contains the source code and example models of paper [0.1080/13632469.2024.2372814](https://doi.org/10.1080/13632469.2024.2372814).
+This repository contains the source code and example models of paper [10.1080/13632469.2024.2372814](https://doi.org/10.1080/13632469.2024.2372814).
 
 To cite or reproduce figures in the paper, you can find the corresponding figure and copy the source code in your work. Please check CI/CD workflow to see how to generate figures used in the paper.
 
